@@ -14,6 +14,8 @@ import com.ec.servicio.ServicioTipoIdentificacion;
 import com.ec.servicio.ServicioTransportista;
 import com.ec.untilitario.AduanaJson;
 import com.ec.untilitario.ArchivoUtils;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.zkoss.bind.annotation.AfterCompose;
@@ -87,7 +89,7 @@ public class NuevoConductor {
 
     @Command
     @NotifyChange({"transportista"})
-    public void buscarAduana() {
+    public void buscarAduana() throws URISyntaxException, IOException  {
         if (transportista.getTrpCedula() != null) {
             if (!transportista.getTrpCedula().equals("")) {
                 String cedulaBuscar = "";

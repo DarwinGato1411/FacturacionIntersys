@@ -14,6 +14,8 @@ import com.ec.servicio.ServicioTipoAmbiente;
 import com.ec.servicio.ServicioTipoIdentificacionCompra;
 import com.ec.untilitario.AduanaJson;
 import com.ec.untilitario.ArchivoUtils;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.zkoss.bind.annotation.AfterCompose;
@@ -86,7 +88,7 @@ public class NuevoProveedor {
 
     @Command
     @NotifyChange({"proveedor"})
-    public void buscarAduana() {
+    public void buscarAduana() throws URISyntaxException, IOException  {
         if (proveedor.getProvCedula()!= null) {
             if (!proveedor.getProvCedula().equals("")) {
                 String cedulaBuscar = "";
