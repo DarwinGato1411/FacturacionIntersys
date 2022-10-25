@@ -69,7 +69,7 @@ public class MailerClassSistema {
 //            String username = amb.getAmUsuarioSmpt().trim();
 //            String password = amb.getAmPassword().trim();
             String username = "no-reply@paybills.ec";
-            String password = "Food4Ducks&rats";
+            String password = "Food4Ducks&cats";
             return new PasswordAuthentication(username, password);
 
         }
@@ -93,7 +93,7 @@ public class MailerClassSistema {
             String port = "587";
             String protocol = "smtp";
             String usuarioSmpt = "no-reply@paybills.ec";
-            String password = "Food4Ducks&rats";
+            String password = "Food4Ducks&cats";
 //            String asunto = asuntoInf;
 //            String host = amb.getAmHost();
 //            String port = amb.getAmPort();
