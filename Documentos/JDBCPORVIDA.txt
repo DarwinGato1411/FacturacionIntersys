@@ -1,0 +1,6 @@
+jdbc/deckxel
+
+JDK
+https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html
+PAYARA
+http://www.payara.org/payara-server-payara-micro-downloads

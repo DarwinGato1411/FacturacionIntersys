@@ -16,7 +16,9 @@ import com.ec.servicio.ServicioTipoAmbiente;
 import com.ec.servicio.ServicioTipoIdentificacion;
 import com.ec.untilitario.AduanaJson;
 import com.ec.untilitario.ArchivoUtils;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -95,7 +97,7 @@ public class NuevoCliente {
 
     @Command
     @NotifyChange({"cliente"})
-    public void buscarAduana() {
+    public void buscarAduana()throws URISyntaxException, IOException {
         if (cliente.getCliCedula() != null) {
             if (!cliente.getCliCedula().equals("")) {
                 String cedulaBuscar = "";
