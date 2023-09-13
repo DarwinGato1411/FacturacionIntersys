@@ -1199,6 +1199,9 @@ public class Facturar extends SelectorComposer<Component> {
                 if (valor.getEsProducto()) {
                     valorDescuento = ArchivoUtils.redondearDecimales(valor.getSubTotal(), 5).subtract(ArchivoUtils.redondearDecimales(valor.getSubTotalDescuento(), 5));
                 }
+                if (valorDescuento.doubleValue()< 0) {
+                    valorDescuento=BigDecimal.ZERO;
+                }
                 valor.setDetValdescuento(valorDescuento);
                 //valor del iva con descuento
                 BigDecimal valorIvaDesc = subTotalDescuento.multiply(factorIva).multiply(valor.getCantidad());

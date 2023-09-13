@@ -10,5 +10,5 @@
         <property name="URL" value="jdbc:postgresql://localhost:5432/deckxelfactmulti"/>
         <property name="driverClass" value="org.postgresql.Driver"/>
     </jdbc-connection-pool>
-    <jdbc-resource enabled="true" jndi-name="jdbc/israel" object-type="user" pool-name="post-gre-sql_deckxelfactmulti_postgresPool"/>
+    <jdbc-resource enabled="true" jndi-name="jdbc/defact" object-type="user" pool-name="post-gre-sql_deckxelfactmulti_postgresPool"/>
 </resources>
