@@ -29,15 +29,15 @@
                          onOK="@command('buscarClienteNombre')"
                          onChange="self.setValue(self.getValue().toUpperCase());" />
             </listheader> 
-            <listheader width="15%"  >
+<!--            <listheader width="15%"  >
                 <textbox value="@bind(vm.buscarRazonSocial)"  
                          class="form-control form-control-sm"
                          tooltiptext="Razón Social"
                          placeholder="Razón Social"
                          onOK="@command('buscarClienteRazon')"
                          onChange="self.setValue(self.getValue().toUpperCase());" />
-            </listheader> 
-            <listheader width="15%"  label="DIRECCION "  /> 
+            </listheader> -->
+            <listheader width="40%"  label="DIRECCION "  /> 
             <listheader width="8%"  label="TELEFONO "  />        
             <listheader width="8%"  label="MOVIL"/>
             <listheader width="20%"  label="CORREO"/>
@@ -55,10 +55,10 @@
                     <label value="@bind(each.cliNombre)" width="96%" 
                            onClick="@command('seleccionarClienteLista',cliente=each)" />
                 </listcell>
-                <listcell onClick="@command('seleccionarClienteLista',cliente=each)">
+<!--                <listcell onClick="@command('seleccionarClienteLista',cliente=each)">
                     <label value="@bind(each.cliNombres)" width="96%"
                            onClick="@command('seleccionarClienteLista',cliente=each)" />
-                </listcell>
+                </listcell>-->
                 <listcell  onClick="@command('seleccionarClienteLista',cliente=each)" >
                     <label value="@bind(each.cliDireccion)"  onClick="@command('seleccionarClienteLista',cliente=each)"  width="96%"/>
                 </listcell>

@@ -69,12 +69,12 @@
                                             onOK="@command('buscarClienteCedula')"
                                             onChange="self.setValue(self.getValue().toUpperCase());" />
                                 </listheader>     
-                                <listheader width="14%"   >
+<!--                                <listheader width="14%"   >
                                 </listheader> 
                                 <listheader width="15%"   >
                                     
-                                </listheader> 
-                                <listheader width="13%"   > 
+                                </listheader> -->
+                                <listheader width="32%"   > 
                                     <textbox value="@bind(vm.buscarNombre)" 
                                             class="form-control form-control-sm"
                                             tooltiptext="Nombre Comercial"
