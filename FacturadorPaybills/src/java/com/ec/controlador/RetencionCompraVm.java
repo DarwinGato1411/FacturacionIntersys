@@ -169,7 +169,7 @@ public class RetencionCompraVm {
     }
 
     private int numeroRetencion() {
-        RetencionCompra recuperada = servicioRetencionCompra.findUtlimaRetencion();
+        RetencionCompra recuperada = servicioRetencionCompra.findUtlimaRetencion(amb);
         if (recuperada != null) {
             // System.out.println("numero de factura " + recuperada);
             numeroRetencion = recuperada.getRcoSecuencial() + 1;

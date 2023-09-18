@@ -85,8 +85,6 @@ public class ListaRetenciones {
     private String amRuc = "";
 
     public ListaRetenciones() {
-        buscarPorFechas();
-       
 
         Session sess = Sessions.getCurrent();
         credential = (UserCredential) sess.getAttribute(EnumSesion.userCredential.getNombre());
@@ -96,21 +94,22 @@ public class ListaRetenciones {
 //        amb = servicioTipoAmbiente.FindALlTipoambiente();
         //OBTIENE LAS RUTAS DE ACCESO A LOS DIRECTORIOS DE LA TABLA TIPOAMBIENTE
         PATH_BASE = amb.getAmDirBaseArchivos() + File.separator
-                    + amb.getAmDirXml();
+                + amb.getAmDirXml();
+        buscarPorFechas();
     }
 
     private void buscarPorFechas() {
-        listaRetencionCompras = servicioRetencionCompra.findByFecha(inicio, fin);
+        listaRetencionCompras = servicioRetencionCompra.findByFecha(inicio, fin, amb);
 
     }
 
     private void buscarFacturaCompra() {
-        listaRetencionCompras = servicioRetencionCompra.findByNumeroFactura(buscarNumFac);
+        listaRetencionCompras = servicioRetencionCompra.findByNumeroFactura(buscarNumFac, amb);
 
     }
 
     private void buscarPorSecuencialRetencion() {
-        listaRetencionCompras = servicioRetencionCompra.findBySecuencialRet(buscarSecuencial);
+        listaRetencionCompras = servicioRetencionCompra.findBySecuencialRet(buscarSecuencial, amb);
     }
 
     @Command
@@ -167,25 +166,25 @@ public class ListaRetenciones {
     @Command
     @NotifyChange({"listaRetencionCompras"})
     public void autorizarSRI(@BindingParam("valor") RetencionCompra valor)
-                throws JRException, IOException, NamingException, SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+            throws JRException, IOException, NamingException, SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 
         String folderGenerados = PATH_BASE + File.separator + amb.getAmGenerados()
-                    + File.separator + new Date().getYear()
-                    + File.separator + new Date().getMonth();
+                + File.separator + new Date().getYear()
+                + File.separator + new Date().getMonth();
         String folderEnviarCliente = PATH_BASE + File.separator + amb.getAmEnviocliente()
-                    + File.separator + new Date().getYear()
-                    + File.separator + new Date().getMonth();
+                + File.separator + new Date().getYear()
+                + File.separator + new Date().getMonth();
         String folderFirmado = PATH_BASE + File.separator + amb.getAmFirmados()
-                    + File.separator + new Date().getYear()
-                    + File.separator + new Date().getMonth();
+                + File.separator + new Date().getYear()
+                + File.separator + new Date().getMonth();
 
         String foldervoAutorizado = PATH_BASE + File.separator + amb.getAmAutorizados()
-                    + File.separator + new Date().getYear()
-                    + File.separator + new Date().getMonth();
+                + File.separator + new Date().getYear()
+                + File.separator + new Date().getMonth();
 
         String folderNoAutorizados = PATH_BASE + File.separator + amb.getAmNoAutorizados()
-                    + File.separator + new Date().getYear()
-                    + File.separator + new Date().getMonth();
+                + File.separator + new Date().getYear()
+                + File.separator + new Date().getMonth();
 
         /*EN EL CASO DE NO EXISTIR LOS DIRECTORIOS LOS CREA*/
         File folderGen = new File(folderGenerados);
@@ -214,9 +213,9 @@ public class ListaRetenciones {
 
  /*PARA CREAR EL ARCHIVO XML FIRMADO*/
         String nombreArchivoXML = File.separator + "RET-"
-                    + amb.getAmEstab()
-                    + valor.getRcoPuntoEmision()
-                    + valor.getRcoSecuencialText() + ".xml";
+                + amb.getAmEstab()
+                + valor.getRcoPuntoEmision()
+                + valor.getRcoSecuencialText() + ".xml";
 
 
         /*RUTAS FINALES DE,LOS ARCHIVOS XML FIRMADOS Y AUTORIZADOS*/
@@ -237,7 +236,7 @@ public class ListaRetenciones {
         archivo es la ruta del archivo xml generado
         nomre del archivo a firmar*/
         XAdESBESSignature.firmar(archivo, nombreArchivoXML,
-                    amb.getAmClaveAccesoSri(), amb, folderFirmado);
+                amb.getAmClaveAccesoSri(), amb, folderFirmado);
 
         f = new File(pathArchivoFirmado);
 
@@ -247,7 +246,7 @@ public class ListaRetenciones {
         /*GUARDAMOS LA CLAVE DE ACCESO ANTES DE ENVIAR A AUTORIZAR*/
         valor.setRcoAutorizacion(claveAccesoComprobante);
         AutorizarDocumentos autorizarDocumentos = new AutorizarDocumentos();
-        RespuestaSolicitud resSolicitud = autorizarDocumentos.validar(datos,amb);
+        RespuestaSolicitud resSolicitud = autorizarDocumentos.validar(datos, amb);
         if (resSolicitud != null && resSolicitud.getComprobantes() != null) {
             // Autorizacion autorizacion = null;
 
@@ -259,7 +258,7 @@ public class ListaRetenciones {
                 }
                 try {
 
-                    RespuestaComprobante resComprobante = autorizarDocumentos.autorizarComprobante(claveAccesoComprobante,amb);
+                    RespuestaComprobante resComprobante = autorizarDocumentos.autorizarComprobante(claveAccesoComprobante, amb);
                     for (Autorizacion autorizacion : resComprobante.getAutorizaciones().getAutorizacion()) {
                         FileOutputStream nuevo = null;
 
@@ -294,15 +293,15 @@ public class ListaRetenciones {
                             /*se agrega la la autorizacion, fecha de autorizacion y se firma nuevamente*/
                             archivoEnvioCliente = aut.generaXMLComprobanteRetencion(valor, amb, foldervoAutorizado, nombreArchivoXML);
                             XAdESBESSignature.firmar(archivoEnvioCliente,
-                                        nombreArchivoXML,
-                                        amb.getAmClaveAccesoSri(),
-                                        amb, foldervoAutorizado);
+                                    nombreArchivoXML,
+                                    amb.getAmClaveAccesoSri(),
+                                    amb, foldervoAutorizado);
 
                             fEnvio = new File(archivoEnvioCliente);
 
                             servicioRetencionCompra.modificar(valor);
                             System.out.println("PATH DEL ARCHIVO PARA ENVIAR AL CLIENTE " + archivoEnvioCliente);
-                            ArchivoUtils.reporteGeneralPdfMail(archivoEnvioCliente.replace(".xml", ".pdf"), valor.getRcoCodigo(), "RET",amb);
+                            ArchivoUtils.reporteGeneralPdfMail(archivoEnvioCliente.replace(".xml", ".pdf"), valor.getRcoCodigo(), "RET", amb);
 //                            ArchivoUtils.zipFile(fEnvio, archivoEnvioCliente);
                             /*GUARDA EL PATH PDF CREADO*/
                             valor.setRcoPathRet(archivoEnvioCliente.replace(".xml", ".pdf"));
@@ -321,12 +320,12 @@ public class ListaRetenciones {
                             if (valor.getIdCabecera().getIdProveedor().getProvCorreo() != null) {
 
                                 mail.sendMailSimple(valor.getIdCabecera().getIdProveedor().getProvCorreo(),
-                                            attachFiles,
-                                            "RETENCION ELECTRONICA",
-                                            valor.getRcoAutorizacion(),
-                                            valor.getRcoSecuencialText(),
-                                            BigDecimal.ZERO,
-                                            valor.getIdCabecera().getIdProveedor().getProvNombre(),amb);
+                                        attachFiles,
+                                        "RETENCION ELECTRONICA",
+                                        valor.getRcoAutorizacion(),
+                                        valor.getRcoSecuencialText(),
+                                        BigDecimal.ZERO,
+                                        valor.getIdCabecera().getIdProveedor().getProvNombre(), amb);
 
                             }
                         }
@@ -360,25 +359,25 @@ public class ListaRetenciones {
     @Command
     @NotifyChange({"listaRetencionCompras"})
     public void reenviarSri(@BindingParam("valor") RetencionCompra valor)
-                throws JRException, IOException, NamingException, SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+            throws JRException, IOException, NamingException, SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
 
         String folderGenerados = PATH_BASE + File.separator + amb.getAmGenerados()
-                    + File.separator + new Date().getYear()
-                    + File.separator + new Date().getMonth();
+                + File.separator + new Date().getYear()
+                + File.separator + new Date().getMonth();
         String folderEnviarCliente = PATH_BASE + File.separator + amb.getAmEnviocliente()
-                    + File.separator + new Date().getYear()
-                    + File.separator + new Date().getMonth();
+                + File.separator + new Date().getYear()
+                + File.separator + new Date().getMonth();
         String folderFirmado = PATH_BASE + File.separator + amb.getAmFirmados()
-                    + File.separator + new Date().getYear()
-                    + File.separator + new Date().getMonth();
+                + File.separator + new Date().getYear()
+                + File.separator + new Date().getMonth();
 
         String foldervoAutorizado = PATH_BASE + File.separator + amb.getAmAutorizados()
-                    + File.separator + new Date().getYear()
-                    + File.separator + new Date().getMonth();
+                + File.separator + new Date().getYear()
+                + File.separator + new Date().getMonth();
 
         String folderNoAutorizados = PATH_BASE + File.separator + amb.getAmNoAutorizados()
-                    + File.separator + new Date().getYear()
-                    + File.separator + new Date().getMonth();
+                + File.separator + new Date().getYear()
+                + File.separator + new Date().getMonth();
 
         /*EN EL CASO DE NO EXISTIR LOS DIRECTORIOS LOS CREA*/
         File folderGen = new File(folderGenerados);
@@ -407,9 +406,9 @@ public class ListaRetenciones {
 
  /*PARA CREAR EL ARCHIVO XML FIRMADO*/
         String nombreArchivoXML = File.separator + "RET-"
-                    + amb.getAmEstab()
-                    + valor.getRcoPuntoEmision()
-                    + valor.getRcoSecuencialText() + ".xml";
+                + amb.getAmEstab()
+                + valor.getRcoPuntoEmision()
+                + valor.getRcoSecuencialText() + ".xml";
 
 
         /*RUTAS FINALES DE,LOS ARCHIVOS XML FIRMADOS Y AUTORIZADOS*/
@@ -430,7 +429,7 @@ public class ListaRetenciones {
         archivo es la ruta del archivo xml generado
         nomre del archivo a firmar*/
         XAdESBESSignature.firmar(archivo, nombreArchivoXML,
-                    amb.getAmClaveAccesoSri(), amb, folderFirmado);
+                amb.getAmClaveAccesoSri(), amb, folderFirmado);
 
         f = new File(pathArchivoFirmado);
 
@@ -443,7 +442,7 @@ public class ListaRetenciones {
 
         try {
 
-            RespuestaComprobante resComprobante = autorizarDocumentos.autorizarComprobante(claveAccesoComprobante,amb);
+            RespuestaComprobante resComprobante = autorizarDocumentos.autorizarComprobante(claveAccesoComprobante, amb);
             for (Autorizacion autorizacion : resComprobante.getAutorizaciones().getAutorizacion()) {
                 FileOutputStream nuevo = null;
 
@@ -478,15 +477,15 @@ public class ListaRetenciones {
                     /*se agrega la la autorizacion, fecha de autorizacion y se firma nuevamente*/
                     archivoEnvioCliente = aut.generaXMLComprobanteRetencion(valor, amb, foldervoAutorizado, nombreArchivoXML);
                     XAdESBESSignature.firmar(archivoEnvioCliente,
-                                nombreArchivoXML,
-                                amb.getAmClaveAccesoSri(),
-                                amb, foldervoAutorizado);
+                            nombreArchivoXML,
+                            amb.getAmClaveAccesoSri(),
+                            amb, foldervoAutorizado);
 
                     fEnvio = new File(archivoEnvioCliente);
 
                     servicioRetencionCompra.modificar(valor);
                     System.out.println("PATH DEL ARCHIVO PARA ENVIAR AL CLIENTE " + archivoEnvioCliente);
-                    ArchivoUtils.reporteGeneralPdfMail(archivoEnvioCliente.replace(".xml", ".pdf"), valor.getRcoCodigo(), "RET",amb);
+                    ArchivoUtils.reporteGeneralPdfMail(archivoEnvioCliente.replace(".xml", ".pdf"), valor.getRcoCodigo(), "RET", amb);
 //                            ArchivoUtils.zipFile(fEnvio, archivoEnvioCliente);
                     /*GUARDA EL PATH PDF CREADO*/
                     valor.setRcoPathRet(archivoEnvioCliente.replace(".xml", ".pdf"));
@@ -504,12 +503,12 @@ public class ListaRetenciones {
 //                        }
                     if (valor.getIdCabecera().getIdProveedor().getProvCorreo() != null) {
                         mail.sendMailSimple(valor.getIdCabecera().getIdProveedor().getProvCorreo(),
-                                    attachFiles,
-                                    "RETENCION ELECTRONICA",
-                                    valor.getRcoAutorizacion(),
-                                    valor.getRcoSecuencialText(),
-                                    BigDecimal.ZERO,
-                                    valor.getIdCabecera().getIdProveedor().getProvNombre(),amb);
+                                attachFiles,
+                                "RETENCION ELECTRONICA",
+                                valor.getRcoAutorizacion(),
+                                valor.getRcoSecuencialText(),
+                                BigDecimal.ZERO,
+                                valor.getIdCabecera().getIdProveedor().getProvNombre(), amb);
                     }
                 }
 
@@ -672,7 +671,7 @@ public class ListaRetenciones {
             con = emf.unwrap(Connection.class);
 
             String reportFile = Executions.getCurrent().getDesktop().getWebApp()
-                        .getRealPath("/reportes");
+                    .getRealPath("/reportes");
             String reportPath = "";
 
             reportPath = reportFile + File.separator + "retencion.jasper";
@@ -696,7 +695,7 @@ public class ListaRetenciones {
 //para pasar al visor
             map.put("pdf", fileContent);
             org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                        "/venta/contenedorReporte.zul", null, map);
+                    "/venta/contenedorReporte.zul", null, map);
             window.doModal();
         } catch (Exception e) {
             if (emf != null) {
@@ -722,7 +721,7 @@ public class ListaRetenciones {
 
             map.put("valor", retencionCompra.getIdCabecera());
             org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                        "/compra/retencion.zul", null, map);
+                    "/compra/retencion.zul", null, map);
             window.doModal();
 //            window.detach();
         } catch (Exception e) {

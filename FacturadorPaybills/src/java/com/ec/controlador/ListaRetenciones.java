@@ -85,9 +85,7 @@ public class ListaRetenciones {
     private String amRuc = "";
 
     public ListaRetenciones() {
-        buscarPorFechas();
-       
-
+        
         Session sess = Sessions.getCurrent();
         credential = (UserCredential) sess.getAttribute(EnumSesion.userCredential.getNombre());
 //        amRuc = credential.getUsuarioSistema().getUsuRuc();
@@ -97,20 +95,22 @@ public class ListaRetenciones {
         //OBTIENE LAS RUTAS DE ACCESO A LOS DIRECTORIOS DE LA TABLA TIPOAMBIENTE
         PATH_BASE = amb.getAmDirBaseArchivos() + File.separator
                     + amb.getAmDirXml();
+          buscarPorFechas();
     }
 
+   
     private void buscarPorFechas() {
-        listaRetencionCompras = servicioRetencionCompra.findByFecha(inicio, fin);
+        listaRetencionCompras = servicioRetencionCompra.findByFecha(inicio, fin, amb);
 
     }
 
     private void buscarFacturaCompra() {
-        listaRetencionCompras = servicioRetencionCompra.findByNumeroFactura(buscarNumFac);
+        listaRetencionCompras = servicioRetencionCompra.findByNumeroFactura(buscarNumFac,amb);
 
     }
 
     private void buscarPorSecuencialRetencion() {
-        listaRetencionCompras = servicioRetencionCompra.findBySecuencialRet(buscarSecuencial);
+        listaRetencionCompras = servicioRetencionCompra.findBySecuencialRet(buscarSecuencial,amb);
     }
 
     @Command
