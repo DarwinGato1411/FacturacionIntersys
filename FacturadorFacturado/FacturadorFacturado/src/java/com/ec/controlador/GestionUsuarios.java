@@ -28,9 +28,11 @@ public class GestionUsuarios {
 
     ServicioUsuario servicioUsuario = new ServicioUsuario();
     private List<Usuario> listaUsuarios = new ArrayList<Usuario>();
+    private List<Tipoambiente> listaTipoambientes = new ArrayList<Tipoambiente>();
 
-    private String buscarAll="";
-   
+    private String amCodigo = "2";
+    private String nombreUsuario = "";
+
     UserCredential credential = new UserCredential();
     private Tipoambiente amb = new Tipoambiente();
     private String amRuc = "";
@@ -43,22 +45,21 @@ public class GestionUsuarios {
         Session sess = Sessions.getCurrent();
         credential = (UserCredential) sess.getAttribute(EnumSesion.userCredential.getNombre());
 //        amRuc = credential.getUsuarioSistema().getUsuRuc();
-        amb = servicioTipoAmbiente.findALlTipoambientePorUsuario(credential.getUsuarioSistema());
-      
-        cosultarUsuarios("");
+
+        consultarUsuarios();
+//        cosultarUsuarios("");
     }
 
-    public String getBuscarAll() {
-        return buscarAll;
+    private void consultarUsuarios() {
+        listaTipoambientes = servicioTipoAmbiente.findALlTipoambientePorUsuarioAdm(nombreUsuario, amCodigo);
     }
 
-    public void setBuscarAll(String buscarAll) {
-        this.buscarAll = buscarAll;
+    @Command
+    @NotifyChange("listaTipoambientes")
+    public void consultarUsuariosPorCodigo() {
+        consultarUsuarios();
     }
 
-  
-  
-   
 
     /*ADMINISTRAR USUARIO*/
     private void cosultarUsuarios(String buscar) {
@@ -73,17 +74,6 @@ public class GestionUsuarios {
         this.listaUsuarios = listaUsuarios;
     }
 
-    
-     @Command
-    @NotifyChange("listaUsuarios")
-    public void buscarCoincidencia() {
-        
-        consultarConicidencia();
-    }
-    
-     private void consultarConicidencia() {
-        listaUsuarios = servicioUsuario.findByCoincidencia(buscarAll);
-    }
     //usuarios
     @Command
     @NotifyChange("listaUsuarios")
@@ -119,6 +109,30 @@ public class GestionUsuarios {
 
     public void setEsVisisible(Boolean esVisisible) {
         this.esVisisible = esVisisible;
+    }
+
+    public String getAmCodigo() {
+        return amCodigo;
+    }
+
+    public void setAmCodigo(String amCodigo) {
+        this.amCodigo = amCodigo;
+    }
+
+    public List<Tipoambiente> getListaTipoambientes() {
+        return listaTipoambientes;
+    }
+
+    public void setListaTipoambientes(List<Tipoambiente> listaTipoambientes) {
+        this.listaTipoambientes = listaTipoambientes;
+    }
+
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
 
 }
