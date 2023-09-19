@@ -4,6 +4,7 @@
  */
 package com.ec.servicio;
 
+import com.ec.entidad.Factura;
 import com.ec.entidad.Tipoambiente;
 import com.ec.entidad.Usuario;
 import java.util.ArrayList;
@@ -253,5 +254,30 @@ public class ServicioTipoAmbiente {
 
         return listaTipoambientes;
     }
+ 
+  public Tipoambiente findByIdTipoambiente(Integer codTipoambiente) {
 
+        List<Tipoambiente> listaTipoambientes = new ArrayList<Tipoambiente>();
+        Tipoambiente tipoambiente = null;
+        try {
+            //Connection connection = em.unwrap(Connection.class);
+            em = HelperPersistencia.getEMF();
+            em.getTransaction().begin();
+            Query query = em.createQuery("SELECT t FROM Tipoambiente t WHERE  t.codTipoambiente =:codTipoambiente");
+//            query.setParameter("amEstado", Boolean.TRUE);
+            query.setParameter("codTipoambiente",codTipoambiente);
+//            query.setParameter("amCodigo", amCodigo);
+            listaTipoambientes = (List<Tipoambiente>) query.getResultList();
+            if (listaTipoambientes.size() > 0) {
+                tipoambiente = listaTipoambientes.get(0);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            System.out.println("Error en lsa consulta tipoambiente " + e.getMessage());
+        } finally {
+            em.close();
+        }
+
+        return tipoambiente;
+    }
 }
