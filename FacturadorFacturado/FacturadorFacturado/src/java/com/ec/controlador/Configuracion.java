@@ -69,8 +69,8 @@ public class Configuracion extends SelectorComposer<Component> {
     @AfterCompose
     public void afterCompose(@ContextParam(ContextType.VIEW) Component view) {
         Selectors.wireComponents(view, this, false);
-        amRuc = credential.getUsuarioSistema().getUsuRuc();
-        tipoambiente = servicioTipoAmbiente.findByAmCodigo(amRuc);
+//        amRuc = credential.getUsuarioSistema().getUsuRuc();
+        tipoambiente = servicioTipoAmbiente.findALlTipoambientePorUsuario(credential.getUsuarioSistema());
         if (tipoambiente != null) {
             amCodigo = tipoambiente.getAmCodigo();
             if (tipoambiente.getLlevarContabilidad().equals("NO")) {
@@ -134,7 +134,7 @@ public class Configuracion extends SelectorComposer<Component> {
         tipoambiente.setAmEstado(Boolean.FALSE);
 
         servicioTipoAmbiente.modificar(tipoambiente);
-        tipoambiente = servicioTipoAmbiente.findByAmCodigo(amRuc, amCodigo);
+        tipoambiente = servicioTipoAmbiente.findByIdUsuario(tipoambiente, amCodigo);
         /*COLOCA EL NUEVO AMBIENTE EN ACTIVO*/
         tipoambiente.setAmEstado(Boolean.TRUE);
         servicioTipoAmbiente.modificar(tipoambiente);
@@ -302,7 +302,5 @@ public class Configuracion extends SelectorComposer<Component> {
     public void setGrabaICE(String grabaICE) {
         this.grabaICE = grabaICE;
     }
-    
-    
 
 }

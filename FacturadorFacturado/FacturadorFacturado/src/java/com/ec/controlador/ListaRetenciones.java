@@ -96,6 +96,7 @@ public class ListaRetenciones {
         //OBTIENE LAS RUTAS DE ACCESO A LOS DIRECTORIOS DE LA TABLA TIPOAMBIENTE
         PATH_BASE = amb.getAmDirBaseArchivos() + File.separator
                 + amb.getAmDirXml();
+        buscarPorFechas();
     }
 
     private void buscarPorFechas() {

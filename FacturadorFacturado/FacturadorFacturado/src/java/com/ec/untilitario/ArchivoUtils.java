@@ -130,7 +130,7 @@ public class ArchivoUtils {
     }
 
     public static byte[] archivoToByte(File file)
-                throws IOException {
+            throws IOException {
         /* 136 */ byte[] buffer = new byte[(int) file.length()];
         /* 137 */ InputStream ios = null;
         try {
@@ -262,7 +262,7 @@ public class ArchivoUtils {
     }
 
     private static Document merge(String exp, File[] files)
-                throws Exception {
+            throws Exception {
         /* 537 */ XPathFactory xPathFactory = XPathFactory.newInstance();
         /* 538 */ XPath xpath = xPathFactory.newXPath();
         /* 539 */ XPathExpression expression = xpath.compile(exp);
@@ -321,7 +321,7 @@ public class ArchivoUtils {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
             DocumentBuilder builder
-                        = factory.newDocumentBuilder();
+                    = factory.newDocumentBuilder();
             Document document = builder.parse(in);
 
             Source source = new DOMSource(document);
@@ -334,19 +334,19 @@ public class ArchivoUtils {
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Tipoambiente.class
-                        .getName()).log(Level.SEVERE, null, ex);
+                    .getName()).log(Level.SEVERE, null, ex);
 
         } catch (ParserConfigurationException e) {
             Logger.getLogger(Tipoambiente.class
-                        .getName()).log(Level.SEVERE, null, e);
+                    .getName()).log(Level.SEVERE, null, e);
 
         } catch (TransformerConfigurationException ex) {
             Logger.getLogger(Tipoambiente.class
-                        .getName()).log(Level.SEVERE, null, ex);
+                    .getName()).log(Level.SEVERE, null, ex);
 
         } catch (TransformerException ex) {
             Logger.getLogger(Tipoambiente.class
-                        .getName()).log(Level.SEVERE, null, ex);
+                    .getName()).log(Level.SEVERE, null, ex);
         } catch (SAXException ex) {
             Logger.getLogger(ArchivoUtils.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -402,7 +402,7 @@ public class ArchivoUtils {
         Connection con = null;
         try {
             String reportFile = Executions.getCurrent().getDesktop().getWebApp()
-                        .getRealPath("/reportes");
+                    .getRealPath("/reportes");
             String reportPath = "";
             emf.getTransaction().begin();
             con = emf.unwrap(Connection.class);
@@ -525,12 +525,12 @@ public class ArchivoUtils {
 
     /*CREAR LA CLAVE DE ACCESO*/
     public static String generaClave(Date fechaEmision,
-                String tipoComprobante,
-                String ruc,
-                String ambiente,
-                String serie,
-                String numeroComprobante,
-                String codigoNumerico, String tipoEmision) {
+            String tipoComprobante,
+            String ruc,
+            String ambiente,
+            String serie,
+            String numeroComprobante,
+            String codigoNumerico, String tipoEmision) {
         String claveGenerada = "";
         int verificador = 0;
 
@@ -625,7 +625,7 @@ public class ArchivoUtils {
         HttpGet getStubMethod = new HttpGet(listStubsUri);
         HttpResponse getStubResponse = client.execute(getStubMethod);
         int getStubStatusCode = getStubResponse.getStatusLine()
-                    .getStatusCode();
+                .getStatusCode();
         if (getStubStatusCode < 200 || getStubStatusCode >= 300) {
             // Handle non-2xx status code
             respuesta.setCedula("");
@@ -633,7 +633,7 @@ public class ArchivoUtils {
             respuesta.setMensaje("");
         }
         String contenido = EntityUtils
-                    .toString(getStubResponse.getEntity());
+                .toString(getStubResponse.getEntity());
 
         System.out.println(contenido);
 
@@ -687,4 +687,68 @@ public class ArchivoUtils {
         byte[] bytes = bos.toByteArray();
         return bytes;
     }
+
+    public static void reporteGeneralPdfMailWS(String pathPDF, Integer numeroFactura, String tipo, Tipoambiente amb) throws JRException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, NamingException {
+        EntityManager emf = HelperPersistencia.getEMF();
+        Connection con = null;
+        try {
+
+            File currentDirFile = new File(".");
+            String helper = currentDirFile.getAbsolutePath();
+            String currentDir = helper.substring(0, helper.length() - currentDirFile.getCanonicalPath().length());
+            System.out.println("helper " + helper);
+            System.out.println("currentDir " + currentDir);
+
+            String sutaPlit[] = helper.split("domain1");
+            System.out.println("sutaPlit[0] " + sutaPlit[0]);
+
+//            String reportFile = "/home/Deckxel/payara41/glassfish/domains/domain1/applications/posibilitum/reportes";
+            String reportFile = sutaPlit[0] + File.separator + "domain1/applications/defact/reportes";
+//            String reportFile = Executions.getCurrent().getDesktop().getWebApp()
+//                    .getRealPath("/reportes");
+            System.out.println("reportFile " + reportFile);
+            String reportPath = "";
+            emf.getTransaction().begin();
+            con = emf.unwrap(Connection.class);
+            if (tipo.contains("FACT")) {
+                reportPath = reportFile + File.separator + "factura.jasper";
+            } else if (tipo.contains("NCRE")) {
+                reportPath = reportFile + File.separator + "notacr.jasper";
+            } else if (tipo.contains("RET")) {
+                reportPath = reportFile + File.separator + "retencion.jasper";
+            } else if (tipo.contains("GUIA")) {
+                reportPath = reportFile + File.separator + "guia.jasper";
+            }
+
+            Map<String, Object> parametros = new HashMap<String, Object>();
+
+            //  parametros.put("codUsuario", String.valueOf(credentialLog.getAdUsuario().getCodigoUsuario()));
+            parametros.put("numfactura", numeroFactura);
+            parametros.put("codTipoAmbiente", amb.getCodTipoambiente());
+
+            if (con != null) {
+                System.out.println("Conexión Realizada Correctamenteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+            }
+            FileInputStream is = null;
+            is = new FileInputStream(reportPath);
+
+//                byte[] buf = JasperRunManager.runReportToPdf(is, parametros, con);
+            JasperPrint print = JasperFillManager.fillReport(reportPath, parametros, con);
+            JasperExportManager.exportReportToPdfFile(print, pathPDF);
+        } catch (FileNotFoundException e) {
+            System.out.println("Error en generar el reporte file " + e.getMessage());
+        } catch (JRException e) {
+            System.out.println("Error en generar el reporte JRE  " + e.getMessage());
+        } finally {
+            if (con != null) {
+                con.close();
+            }
+            if (emf != null) {
+                emf.close();
+                System.out.println("cerro entity");
+            }
+        }
+
+    }
+
 }

@@ -8,7 +8,7 @@
 
 <?init class="com.ec.seguridad.Autentificador"?>
 <?init class="org.zkoss.zk.ui.util.Composition" arg0="/plantilla/plantilla.zul"?>
-<?link rel="icon" type="image/x-icon"  href="/imagenes/paybills/logo.png"?>
+<?link rel="icon" type="image/x-icon" href="/iconos/deckxel.ico"?>
 
 
 <zk  contentStyle="overflow:auto" class="col-12 col-sm-12 col-md-12 col-lg-12" >
@@ -20,26 +20,37 @@
             </tabs>
             <tabpanels >
                 <tabpanel  width="99%" class="factura">                    
-                    <div  style="margin-bottom:1em">
-                        <div 
-                            class="fa-solid fa-plus-circle fa-2x icon"
-                            onClick="@command('agregarUsario')"
-                            tooltiptext="Nuevo usuario"
-                        >
-                            <span>Nuevo usuario</span>
-                        </div>
+                    <div class="factura_header">
+                        <div class="">
+<!--                            <div 
+                                class="fa-solid fa-plus-circle fa-2x icon"
+                                onClick="@command('agregarUsario')"
+                                tooltiptext="Nuevo usuario"
+                            >
+                                <span>Nuevo usuario</span>
+                            </div>-->
+                        
+                            <div class="wrapper_input_mod">
+                                <span>Tipo ambiente </span>
+                                <radiogroup
+                                    class="radio_group" 
+                                    onCheck="@command('consultarUsuariosPorCodigo')" 
+                                    selectedItem="@bind(vm.amCodigo)"  
+                                >                   
+                                    <radio label="PRODUCCION" value="2"/>
+                                    <space bar="false"  />   
+                                    <radio label="PRUEBAS" value="1"/>                          
+                                </radiogroup>
+                            </div>
 
+                        </div>
                     </div>
 
                     <div class="factura_body factura_content">
                         <div class="factura_item">
-                            <listbox width="100%" model="@load(vm.listaUsuarios)" 
+                            <listbox width="100%" model="@load(vm.listaTipoambientes)" 
                                      nonselectableTags="*"  mold="paging"
                                      pageSize="20">
-                         
-                                
-                                            
-                                    
                                 <listhead sizable="true">
                                     <listheader  align="left" width="15%">
                                         
@@ -63,32 +74,32 @@
                                 <template name="model">
                                     <listitem width="100%" > 
                                         <listcell  zclass = "mycss-listcell">
-                                            <textbox readonly="true" value="@bind(each.usuRuc)"  style="font-size:12px;background:#EBF5FB"
+                                            <textbox readonly="true" value="@bind(each.idUsuario.usuRuc)"  style="font-size:12px;background:#EBF5FB"
                                                      class="form-control form-control-sm" />
                                         </listcell>  
                                         <listcell  zclass = "mycss-listcell">
-                                            <textbox readonly="true" value="@bind(each.usuNombre)"  style="font-size:12px;background:#EBF5FB"
+                                            <textbox readonly="true" value="@bind(each.idUsuario.usuNombre)"  style="font-size:12px;background:#EBF5FB"
                                                      class="form-control form-control-sm" />
                                         </listcell>  
                                         <listcell  zclass = "mycss-listcell">
-                                            <textbox readonly="true" value="@bind(each.usuLogin)"  style="font-size:12px;background:#EBF5FB"
+                                            <textbox readonly="true" value="@bind(each.idUsuario.usuLogin)"  style="font-size:12px;background:#EBF5FB"
                                                      class="form-control form-control-sm" />
                                         </listcell>   
                                         <listcell  zclass = "mycss-listcell">      
-                                            <textbox readonly="true" value="@bind(each.usuPassword)" 
+                                            <textbox readonly="true" value="@bind(each.idUsuario.usuPassword)" 
                                                      class="form-control form-control-sm"
                                                      style="font-size:12px;background:#EBF5FB"
                                                      type="password" />
                                         </listcell>  
                                         <listcell  zclass = "mycss-listcell">                          
-                                            <textbox readonly="true" value="@bind(each.usuTipoUsuario)"  style="font-size:12px;background:#EBF5FB"
+                                            <textbox readonly="true" value="@bind(each.idUsuario.usuTipoUsuario)"  style="font-size:12px;background:#EBF5FB"
                                                      class="form-control form-control-sm"  />
                                         </listcell>                  
                                         <listcell  zclass = "mycss-listcell">                          
                                             <datebox 
                                                 width="100%"
                                                 compact="true" 
-                                                value="@bind(each.usuFechaPago)" 
+                                                value="@bind(each.idUsuario.usuFechaPago)" 
                                                 readonly="true" 
                                                 buttonVisible="true" 
                                                 lenient="true" 
@@ -99,7 +110,7 @@
                                         <listcell  zclass = "mycss-listcell">
                                             <image src="/iconos/editar.png"
                                                    class="grow"
-                                                   onClick="@command('modificarUsario',valor=each)" 
+                                                   onClick="@command('modificarUsario',valor=each.idUsuario)" 
                                                    tooltiptext="Editar usuario"/> 
                                             
                                         </listcell>     
