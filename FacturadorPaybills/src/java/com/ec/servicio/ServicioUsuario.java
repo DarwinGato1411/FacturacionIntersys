@@ -118,7 +118,7 @@ public class ServicioUsuario {
             if (usuario.getUsuNivel() != 1) {
                 WHERE = "  AND u.usuRuc=:usuRuc";
             }
-            Query query = em.createQuery(SELECT + WHERE+ORDERBY);
+            Query query = em.createQuery(SELECT + WHERE + ORDERBY);
             query.setParameter("usuNombre", "%" + nombre + "%");
             if (usuario.getUsuNivel() != 1) {
                 query.setParameter("usuRuc", usuario.getUsuRuc());
@@ -134,11 +134,10 @@ public class ServicioUsuario {
 
         return listaUsuarios;
     }
-    
+
     /*Recupera contraseña
-    */
-    
-    public Usuario findRecuperaPassword(String ruc,String correo) {
+     */
+    public Usuario findRecuperaPassword(String ruc, String correo) {
 
         List<Usuario> listaClientes = new ArrayList<Usuario>();
         Usuario usuarioObtenido = new Usuario();
@@ -166,5 +165,31 @@ public class ServicioUsuario {
         }
 
         return usuarioObtenido;
+    }
+
+    public List<Usuario> findByCoincidencia(String busqueda) {
+
+//        Usuario usuarioLogeado = new Usuario();
+        List<Usuario> listaUsuarios = new ArrayList<Usuario>();
+        try {
+            System.out.println("Entra a consultar usuarios ");
+
+            em = HelperPersistencia.getEMF();
+            em.getTransaction().begin();
+
+            Query query = em.createQuery("SELECT u FROM Usuario u  WHERE UPPER( u.usuNombre) like :usuNombre OR UPPER(u.usuLogin) like :usuLogin OR u.usuRuc like :usuRuc ORDER BY u.usuNombre");
+            query.setParameter("usuNombre", "%" + busqueda + "%");
+            query.setParameter("usuLogin", "%" + busqueda + "%");
+            query.setParameter("usuRuc", "%" + busqueda + "%");
+
+            listaUsuarios = (List<Usuario>) query.getResultList();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            System.out.println("Error en lsa consulta usuarios " + e.getMessage());
+        } finally {
+            em.close();
+        }
+
+        return listaUsuarios;
     }
 }

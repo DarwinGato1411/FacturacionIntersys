@@ -70,11 +70,11 @@
 body {
     padding: 0;
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .title {
-    font-size: 20px
+    font-size: 20px;
 }
 
 .all_wrapper {
@@ -206,7 +206,7 @@ body {
     padding: 0 20px 20px 20px;
     width: 50%;
     margin-left: auto;
-    margin-right: 0
+    margin-right: 0;
 }
 
 .all_wrapper .container_landing .contendor_signin .contendor_body .contenedor_button .btn {
@@ -216,23 +216,23 @@ body {
     background-color: #6b3c8d;
     color: #fff;
     border-radius: 10px;
-    border: none
+    border: none;
 }
 
 .all_wrapper .container_landing .contendor_signin .contendor_body .contenedor_button .btn:hover {
-    background-color: var(--primary-color)
+    background-color: var(--primary-color);
 }
 
 .all_wrapper .container_landing .contendor_imagen {
-    width: 100%
+    width: 100%;
 }
 
 .all_wrapper .container_landing .contendor_imagen .logo {
-    width: 40%
+    width: 40%;
 }
 
 .all_wrapper .container_landing .contendor_imagen .imgLogin {
-    width: 90%
+    width: 90%;
 }
 
 
@@ -256,7 +256,7 @@ body {
     .all_wrapper .container_landing .contendor_imagen img {
         display: block;
         width: 100%;
-        color: #342065
+        color: #342065;
     }
 }
 

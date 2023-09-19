@@ -29,7 +29,7 @@ public class GestionUsuarios {
     ServicioUsuario servicioUsuario = new ServicioUsuario();
     private List<Usuario> listaUsuarios = new ArrayList<Usuario>();
 
-    
+    private String buscarAll="";
    
     UserCredential credential = new UserCredential();
     private Tipoambiente amb = new Tipoambiente();
@@ -64,7 +64,17 @@ public class GestionUsuarios {
     public void setListaUsuarios(List<Usuario> listaUsuarios) {
         this.listaUsuarios = listaUsuarios;
     }
+    
+     @Command
+    @NotifyChange("listaUsuarios")
+    public void buscarCoincidencia() {
+        
+        consultarConicidencia();
+    }
 
+    private void consultarConicidencia() {
+        listaUsuarios = servicioUsuario.findByCoincidencia(buscarAll);
+    }
     //usuarios
     @Command
     @NotifyChange("listaUsuarios")
@@ -100,6 +110,14 @@ public class GestionUsuarios {
 
     public void setEsVisisible(Boolean esVisisible) {
         this.esVisisible = esVisisible;
+    }
+
+    public String getBuscarAll() {
+        return buscarAll;
+    }
+
+    public void setBuscarAll(String buscarAll) {
+        this.buscarAll = buscarAll;
     }
 
 }

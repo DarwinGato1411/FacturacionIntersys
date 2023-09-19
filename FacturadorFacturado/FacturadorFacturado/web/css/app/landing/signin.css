@@ -208,7 +208,7 @@ body {
 }
 
 .all_wrapper .container_landing .contendor_signin .contendor_body .contenedor_button .btn:hover {
-    background-color: var(--secondary-color)
+    background-color: var(--secondary-color);
 }
 
 .all_wrapper .container_landing .contendor_imagen {

@@ -7,6 +7,7 @@ package com.ec.servicio;
 import com.ec.entidad.Cliente;
 import com.ec.entidad.DetalleGuiaremision;
 import com.ec.entidad.Guiaremision;
+import com.ec.entidad.Tipoambiente;
 import com.ec.untilitario.Totales;
 import java.util.ArrayList;
 import java.util.Date;
@@ -98,24 +99,32 @@ public class ServicioGuia {
 
     }
 
-    public List<Guiaremision> FindALlGuiaremision() {
+    public Guiaremision findUltimaGuiaremision(Tipoambiente amb) {
 
         List<Guiaremision> listaGuiaremisions = new ArrayList<Guiaremision>();
+        Guiaremision guias = new Guiaremision();
         try {
             //Connection connection = em.unwrap(Connection.class);
             em = HelperPersistencia.getEMF();
             em.getTransaction().begin();
-            Query query = em.createNamedQuery("Guiaremision.findAll", Guiaremision.class);
-//           query.setParameter("codigoUsuario", guia);
+            Query query = em.createQuery("SELECT a FROM Guiaremision a where a.codTipoambiente=:codTipoambiente  and (a.facNumero<>'0' or a.facNumero IS NOT NULL) ORDER BY  a.facNumero DESC");
+            query.setParameter("codTipoambiente", amb.getCodTipoambiente());
+            query.setMaxResults(2);
+
             listaGuiaremisions = (List<Guiaremision>) query.getResultList();
+            if (listaGuiaremisions.size() > 0) {
+                guias = listaGuiaremisions.get(0);
+            } else {
+                guias = null;
+            }
             em.getTransaction().commit();
         } catch (Exception e) {
-            System.out.println("Error en lsa consulta guia");
+            System.out.println("Error en lsa consulta guia " + e.getMessage());
         } finally {
             em.close();
         }
 
-        return listaGuiaremisions;
+        return guias;
     }
 
     public Guiaremision findUltimaGuiaremision() {

@@ -41,7 +41,16 @@
                                             
                                     
                                 <listhead sizable="true">
-                                    <listheader label="RUC"  align="left" width="15%"></listheader>
+                                    <listheader  align="left" width="15%">
+                                        
+                                        <textbox value="@bind(vm.buscarAll)"  
+                                                 tooltiptext="Buscar usuario"
+                                                 class="form-control form-control-sm"                                         
+                                                 placeholder="Buscar usuario"
+                                                 onOK="@command('buscarCoincidencia')"
+                                                 onChange="self.setValue(self.getValue().toUpperCase());" 
+                                        />
+                                    </listheader>
                                     <listheader label="Nombre de la cuenta"  align="left" width="35%"></listheader>
                                     <listheader label="Usuario"  align="left" width="20%"></listheader>
                                     <listheader label="Contraseña"  align="left" width="20%"></listheader>

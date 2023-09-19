@@ -3,9 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/PROYECTOS/SIMON/FacturacionIntersys/FacturadorPaybills/src/java/com/ec/untilitario/AutorizarDocumentos.java</file>
-            <file>file:/D:/PROYECTOS/SIMON/FacturacionIntersys/FacturadorPaybills/src/java/com/ec/controlador/ListaFacturas.java</file>
-            <file>file:/D:/PROYECTOS/SIMON/FacturacionIntersys/FacturadorPaybills/web/venta/listafacturas.zul</file>
+            <file>file:/C:/Users/NanoDan/Documents/DEFACT/Facturas/FacturacionIntersys/FacturadorPaybills/src/java/com/ec/servicio/ServicioRetencionCompra.java</file>
+            <file>file:/C:/Users/NanoDan/Documents/DEFACT/Facturas/FacturacionIntersys/FacturadorPaybills/src/java/com/ec/controlador/RetencionCompraVm.java</file>
         </group>
     </open-files>
 </project-private>
