@@ -8,7 +8,7 @@
 
 
             <div class="col-12 col-sm-12 col-md-5 col-lg-5" align="start">
-                <image src="/imagenes/facturados/logo2.jpg" class="logo_defact" />
+                <image src="/imagenes/facturados/logo.png" class="logo_defact" />
                 <!-- <label value="Sistema de facturacion - DEFACT" sclass="banner-head labelNuevo" />  --> 
                 
                      

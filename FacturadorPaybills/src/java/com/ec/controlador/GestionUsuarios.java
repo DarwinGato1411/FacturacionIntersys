@@ -33,8 +33,8 @@ public class GestionUsuarios {
     private String amCodigo = "2";
     private String nombreUsuario = "";
 
-    private String buscarAll="";
-   
+    private String buscarAll = "";
+
     UserCredential credential = new UserCredential();
     private Tipoambiente amb = new Tipoambiente();
     private String amRuc = "";
@@ -75,23 +75,24 @@ public class GestionUsuarios {
     public void setListaUsuarios(List<Usuario> listaUsuarios) {
         this.listaUsuarios = listaUsuarios;
     }
-    
-     @Command
+
+    @Command
     @NotifyChange("listaUsuarios")
     public void buscarCoincidencia() {
-        
+
         consultarConicidencia();
     }
 
     private void consultarConicidencia() {
         listaUsuarios = servicioUsuario.findByCoincidencia(buscarAll);
     }
+
     //usuarios
     @Command
     @NotifyChange("listaUsuarios")
     public void agregarUsario() {
         org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                    "/nuevo/usuario.zul", null, null);
+                "/nuevo/usuario.zul", null, null);
         window.doModal();
         cosultarUsuarios("");
     }
@@ -102,7 +103,7 @@ public class GestionUsuarios {
         final HashMap<String, Usuario> map = new HashMap<String, Usuario>();
         map.put("usuario", usuario);
         org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                    "/nuevoadmin/usuario.zul", null, map);
+                "/nuevoadmin/usuario.zul", null, map);
         window.doModal();
         cosultarUsuarios("");
     }
@@ -129,6 +130,8 @@ public class GestionUsuarios {
 
     public void setBuscarAll(String buscarAll) {
         this.buscarAll = buscarAll;
+    }
+
     public String getAmCodigo() {
         return amCodigo;
     }
