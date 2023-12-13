@@ -26,3 +26,4 @@ build\*
 hs_err_pid*
 /FacturadorFacturado/FacturadorFacturado/build/
 /FacturadorFacturado/FacturadorFacturado/dist/
+/FacturadorPaybills/dist/

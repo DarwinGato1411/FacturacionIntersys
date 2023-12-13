@@ -204,16 +204,15 @@ public class ServicioRetencionCompra {
         return retencionCompra1;
     }
 
-    public RetencionCompra findUtlimaRetencion(Tipoambiente codTipoambiente) {
+    public RetencionCompra findUtlimaRetencion(Tipoambiente tipoambiente) {
         RetencionCompra retencionCompra = null;
         List<RetencionCompra> listaRetencionCompras = new ArrayList<RetencionCompra>();
         try {
             //Connection connection = em.unwrap(Connection.class);
             em = HelperPersistencia.getEMF();
             em.getTransaction().begin();
-            Query query = em.createQuery("SELECT a FROM RetencionCompra a WHERE a.codTipoambiente=:codTipoambiente ORDER BY a.rcoSecuencial DESC ");
-            query.setParameter("codTipoambiente", codTipoambiente);
-            query.setMaxResults(2);
+            Query query = em.createQuery("SELECT a FROM RetencionCompra a WHERE a.codTipoambiente=:tipoambiente ORDER BY a.rcoSecuencial DESC ");
+            query.setParameter("tipoambiente", tipoambiente);
             listaRetencionCompras = (List<RetencionCompra>) query.getResultList();
             if (listaRetencionCompras.size() > 0) {
                 retencionCompra = listaRetencionCompras.get(0);

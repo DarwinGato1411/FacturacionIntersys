@@ -85,6 +85,7 @@ public class ListaRetenciones {
     private String amRuc = "";
 
     public ListaRetenciones() {
+        buscarPorFechas();
 
         Session sess = Sessions.getCurrent();
         credential = (UserCredential) sess.getAttribute(EnumSesion.userCredential.getNombre());

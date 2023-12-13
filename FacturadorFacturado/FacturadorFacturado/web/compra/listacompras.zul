@@ -61,7 +61,7 @@
                                 </div>  -->
 
                                 <div class="factura_header paint_all_row">
-                                    <div class="fact_row fact_only_row">
+                                    <div style="display:flex;" class="fact_row fact_only_row">
                                         <div class="wrapper_data" style="max-width:300px">
 
                                             <div class="wrapper_input" >

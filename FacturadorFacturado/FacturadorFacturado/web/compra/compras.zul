@@ -198,10 +198,7 @@
 
 
                         <div class="factura_header">
-                            <div class="fact_row_custom">
-
-
-
+                            <div style="width:50%;" class="fact_row_custom">
                                 <div class="container_data_custom">
                                     <div class="wrapper_data">
                                         <div class="wrapper_input">
@@ -274,13 +271,7 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
-
-
-
-                            <div class="fact_row">
+                            <div style="width:50%;" class="fact_row">
                                 <div class="wrapper_data">
                                 <div class="wrapper_input">
                                         <textbox  

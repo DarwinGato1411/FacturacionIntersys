@@ -86,8 +86,6 @@ public class NuevoCliente {
 
     public NuevoCliente() {
 
-       
-
         Session sess = Sessions.getCurrent();
         credential = (UserCredential) sess.getAttribute(EnumSesion.userCredential.getNombre());
 //        amRuc = credential.getUsuarioSistema().getUsuRuc();
@@ -97,7 +95,7 @@ public class NuevoCliente {
 
     @Command
     @NotifyChange({"cliente"})
-    public void buscarAduana()throws URISyntaxException, IOException {
+    public void buscarAduana() throws URISyntaxException, IOException {
         if (cliente.getCliCedula() != null) {
             if (!cliente.getCliCedula().equals("")) {
                 String cedulaBuscar = "";
@@ -111,9 +109,9 @@ public class NuevoCliente {
                     cliente.setCliApellidos("");
                     cliente.setCliNombres("");
                     cliente.setCliNombre("");
-                    cliente.setCliRazonSocial("" );
+                    cliente.setCliRazonSocial("");
                     Clients.showNotification("Cliente no encontrado ingreselo manualmente...!! ",
-                                Clients.NOTIFICATION_TYPE_INFO, null, "end_center", 2000, true);
+                            Clients.NOTIFICATION_TYPE_INFO, null, "end_center", 2000, true);
                     return;
                 }
                 if (aduana != null) {
@@ -160,26 +158,24 @@ public class NuevoCliente {
     public void guardar() {
         /*getCliNombre es el nombre comercial*/
         if (cliente.getCliCedula() != null
-                    && cliente.getCliNombres() != null
-                    && cliente.getCliApellidos() != null
-                    && cliente.getCliNombre() != null
-                    && cliente.getCliDireccion() != null
-                    && cliente.getCliTelefono() != null
-                    && cliente.getCliMovil() != null
-                    && cliente.getCiudad() != null
-                    && cliente.getCliCorreo() != null
-                    && tipoadentificacion != null) {
+                && cliente.getCliNombre() != null
+                && cliente.getCliDireccion() != null
+                && cliente.getCliTelefono() != null
+                && cliente.getCliMovil() != null
+                && cliente.getCiudad() != null
+                && cliente.getCliCorreo() != null
+                && tipoadentificacion != null) {
 
             if (tipoadentificacion.getTidCodigo().equals("04")) {
                 if (cliente.getCliCedula().length() != 13) {
                     Clients.showNotification("Verifique el RUC ingresada debe tener 13 caracteres ",
-                                Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
+                            Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
                     return;
                 }
             } else if (tipoadentificacion.getTidCodigo().equals("05")) {
                 if (cliente.getCliCedula().length() != 10) {
                     Clients.showNotification("Verifique la CEDULA ingresada debe tener 10 caracteres ",
-                                Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
+                            Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
                     return;
                 }
             }
@@ -187,7 +183,7 @@ public class NuevoCliente {
             cliente.setCodTipoambiente(amb);
             if (accion.equals("create")) {
 
-                if (servicioCliente.FindClienteForCedula(cliente.getCliCedula(),amb) == null) {
+                if (servicioCliente.FindClienteForCedula(cliente.getCliCedula(), amb) == null) {
                     cliente.setClietipo(Integer.valueOf(clietipo));
                     cliente.setClieFechaRegistro(fechaReg);
                     cliente.setIdTipoIdentificacion(tipoadentificacion);
@@ -198,7 +194,7 @@ public class NuevoCliente {
                 } else {
 
                     Clients.showNotification("El número de documento (CI / RUC) ya se encuentra registrado ",
-                                Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
+                            Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
                 }
 
             } else {
@@ -216,7 +212,7 @@ public class NuevoCliente {
         } else {
 
             Clients.showNotification("Verifique la informacion requerida",
-                        Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
+                    Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
         }
     }
 

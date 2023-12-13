@@ -110,11 +110,11 @@ public class ServicioCompra {
             DetalleCompra ingreso = null;
             for (DetalleCompraUtil item : detalleCompra) {
                 ingreso = new DetalleCompra(item.getCantidad(),
-                            item.getDescripcion(),
-                            item.getSubtotal(),
-                            item.getTotal(),
-                            compra,
-                            item.getProducto());
+                        item.getDescripcion(),
+                        item.getSubtotal(),
+                        item.getTotal(),
+                        compra,
+                        item.getProducto());
                 ingreso.setDetValorInicial(item.getCantidad());
                 ingreso.setDetFactor(item.getFactor());
                 ingreso.setIprodCantidad(item.getTotalTRanformado());
@@ -129,15 +129,16 @@ public class ServicioCompra {
 
     }
 
-    public List<CabeceraCompra> findCabProveedor(String valor) {
+    public List<CabeceraCompra> findCabProveedor(String valor, Tipoambiente codTipoambiente) {
 
         List<CabeceraCompra> listaCabeceraCompras = new ArrayList<CabeceraCompra>();
         try {
             //Connection connection = em.unwrap(Connection.class);
             em = HelperPersistencia.getEMF();
             em.getTransaction().begin();
-            Query query = em.createNamedQuery("CabeceraCompra.findCabProveedor", CabeceraCompra.class);
+            Query query = em.createQuery("SELECT c FROM CabeceraCompra c WHERE c.codTipoambiente=:codTipoambiente AND c.cabProveedor LIKE :cabProveedor ORDER BY c.cabFechaEmision DESC");
             query.setParameter("cabProveedor", "%" + valor + "%");
+            query.setParameter("codTipoambiente", codTipoambiente);
             listaCabeceraCompras = (List<CabeceraCompra>) query.getResultList();
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -149,7 +150,7 @@ public class ServicioCompra {
         return listaCabeceraCompras;
     }
 
-    public List<CabeceraCompra> findByBetweenFecha(Date incio, Date fin,Tipoambiente codTipoambiente) {
+    public List<CabeceraCompra> findByBetweenFecha(Date incio, Date fin, Tipoambiente codTipoambiente) {
 
         List<CabeceraCompra> listaCabeceraCompras = new ArrayList<CabeceraCompra>();
         try {
@@ -171,14 +172,15 @@ public class ServicioCompra {
         return listaCabeceraCompras;
     }
 
-    public List<CabeceraCompra> findByNumeroFactura(String cabNumFactura) {
+    public List<CabeceraCompra> findByNumeroFactura(String cabNumFactura, Tipoambiente codTipoambiente) {
 
         List<CabeceraCompra> listaCabeceraCompras = new ArrayList<CabeceraCompra>();
         try {
             //Connection connection = em.unwrap(Connection.class);
             em = HelperPersistencia.getEMF();
             em.getTransaction().begin();
-            Query query = em.createQuery("SELECT c FROM CabeceraCompra c WHERE c.cabNumFactura LIKE :cabNumFactura ORDER BY c.cabNumFactura DESC");
+            Query query = em.createQuery("SELECT c FROM CabeceraCompra c WHERE c.cabNumFactura LIKE :cabNumFactura  AND c.codTipoambiente=:codTipoambiente ORDER BY c.cabNumFactura DESC");
+            query.setParameter("codTipoambiente", codTipoambiente);
             query.setParameter("cabNumFactura", "%" + cabNumFactura + "%");
             listaCabeceraCompras = (List<CabeceraCompra>) query.getResultList();
             em.getTransaction().commit();
