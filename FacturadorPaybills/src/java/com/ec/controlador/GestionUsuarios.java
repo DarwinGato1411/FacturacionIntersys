@@ -10,15 +10,21 @@ import com.ec.seguridad.EnumSesion;
 import com.ec.seguridad.UserCredential;
 import com.ec.servicio.ServicioTipoAmbiente;
 import com.ec.servicio.ServicioUsuario;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import javax.activation.MimetypesFileTypeMap;
 import org.zkoss.bind.annotation.BindingParam;
 import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.NotifyChange;
 import org.zkoss.zk.ui.Executions;
 import org.zkoss.zk.ui.Session;
 import org.zkoss.zk.ui.Sessions;
+import org.zkoss.zk.ui.util.Clients;
+import org.zkoss.zul.Filedownload;
 
 /**
  *
@@ -32,8 +38,6 @@ public class GestionUsuarios {
 
     private String amCodigo = "2";
     private String nombreUsuario = "";
-
-    private String buscarAll = "";
 
     UserCredential credential = new UserCredential();
     private Tipoambiente amb = new Tipoambiente();
@@ -76,23 +80,12 @@ public class GestionUsuarios {
         this.listaUsuarios = listaUsuarios;
     }
 
-    @Command
-    @NotifyChange("listaUsuarios")
-    public void buscarCoincidencia() {
-
-        consultarConicidencia();
-    }
-
-    private void consultarConicidencia() {
-        listaUsuarios = servicioUsuario.findByCoincidencia(buscarAll);
-    }
-
     //usuarios
     @Command
     @NotifyChange("listaUsuarios")
     public void agregarUsario() {
         org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                "/nuevo/usuario.zul", null, null);
+                    "/nuevo/usuario.zul", null, null);
         window.doModal();
         cosultarUsuarios("");
     }
@@ -103,11 +96,30 @@ public class GestionUsuarios {
         final HashMap<String, Usuario> map = new HashMap<String, Usuario>();
         map.put("usuario", usuario);
         org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                "/nuevoadmin/usuario.zul", null, map);
+                    "/nuevoadmin/usuario.zul", null, map);
         window.doModal();
         cosultarUsuarios("");
     }
 
+    
+    @Command
+    public void descargarFirma(@BindingParam("valor") Tipoambiente amb) {
+
+        try {
+            String filePath = amb.getAmDirBaseArchivos() + File.separator + amb.getAmFolderFirma() + File.separator + amb.getAmDirFirma();
+            File dosfile = new File(filePath);
+            if (dosfile.exists()) {
+                FileInputStream inputStream = new FileInputStream(dosfile);
+                Filedownload.save(inputStream, new MimetypesFileTypeMap().getContentType(dosfile), dosfile.getName());
+            } else {
+                Clients.showNotification("La firma no fue cargada", Clients.NOTIFICATION_TYPE_INFO, null, "middle_center", 3000, true);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("ERROR AL DESCARGAR EL ARCHIVO" + e.getMessage());
+        }
+
+    }
+    
     public UserCredential getCredential() {
         return credential;
     }
@@ -122,14 +134,6 @@ public class GestionUsuarios {
 
     public void setEsVisisible(Boolean esVisisible) {
         this.esVisisible = esVisisible;
-    }
-
-    public String getBuscarAll() {
-        return buscarAll;
-    }
-
-    public void setBuscarAll(String buscarAll) {
-        this.buscarAll = buscarAll;
     }
 
     public String getAmCodigo() {

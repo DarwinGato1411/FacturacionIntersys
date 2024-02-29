@@ -10,7 +10,7 @@
     <div class="container_modal">
 
         <div class="body">
-            <div class="container_row_input">
+                            <div class="container_row_input">
                 <div class="wrapper_input_mod">
                     <span>Tipo Usuario: </span>
                     <div class="wrapper_input_text">
@@ -184,6 +184,7 @@
             </div>
 
         </div>
+        
         
         <div style="display:flex;justify-content:flex-end;">
             <button class="btn_modal" style="width:300px" onClick="@command('guardar')">

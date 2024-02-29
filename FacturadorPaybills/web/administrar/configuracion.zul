@@ -189,7 +189,7 @@
                     <div class="container_row_input">
                     
                         <div class="wrapper_input_mod">
-                            <span>Clave SRI: </span>
+                            <span>Clave firma: </span>
                             <div class="wrapper_input_text">
                                 <div class="fa-solid fa-key icon"></div>
                                 <textbox 

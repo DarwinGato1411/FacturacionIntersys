@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="puntoventa" language="groovy" pageWidth="212" pageHeight="400" columnWidth="190" leftMargin="9" rightMargin="13" topMargin="2" bottomMargin="20" isIgnorePagination="true">
 	<property name="ireport.zoom" value="2.253944402704733"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="200"/>
+	<property name="ireport.y" value="344"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -465,11 +465,11 @@ and  tipoambiente.am_estado is true limit 1;]]>
 			</staticText>
 			<elementGroup>
 				<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-					<reportElement stretchType="RelativeToBandHeight" x="0" y="174" width="190" height="20" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true"/>
+					<reportElement stretchType="RelativeToBandHeight" x="0" y="174" width="190" height="13" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true"/>
 					<textElement>
-						<font size="7"/>
+						<font size="8"/>
 					</textElement>
-					<textFieldExpression class="java.lang.String"><![CDATA[$F{cli_nombre}]]></textFieldExpression>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{cli_nombres}+" "+$F{cli_apellidos}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="0" y="161" width="190" height="11"/>
@@ -537,7 +537,7 @@ and  tipoambiente.am_estado is true limit 1;]]>
 					</jr:column>
 					<jr:column width="28">
 						<jr:detailCell height="13" rowSpan="1">
-							<textField isStretchWithOverflow="true" pattern="###0.00;-###0.00">
+							<textField isStretchWithOverflow="true" pattern="###0.000;-###0.000">
 								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="28" height="13"/>
 								<box rightPadding="2">
 									<pen lineWidth="0.25"/>
@@ -555,7 +555,7 @@ and  tipoambiente.am_estado is true limit 1;]]>
 					</jr:column>
 					<jr:column width="28">
 						<jr:detailCell height="13" rowSpan="1">
-							<textField isStretchWithOverflow="true" pattern="###0.00;-###0.00">
+							<textField isStretchWithOverflow="true" pattern="###0.000;-###0.000">
 								<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="28" height="13"/>
 								<box leftPadding="1" rightPadding="2">
 									<pen lineWidth="0.25"/>
@@ -578,7 +578,7 @@ and  tipoambiente.am_estado is true limit 1;]]>
 			</elementGroup>
 		</band>
 		<band height="139" splitType="Prevent">
-			<textField isBlankWhenNull="true">
+			<textField pattern="###0.000;-###0.000" isBlankWhenNull="true">
 				<reportElement style="table_TD" positionType="Float" x="147" y="41" width="35" height="13"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
@@ -606,7 +606,7 @@ and  tipoambiente.am_estado is true limit 1;]]>
 				</textElement>
 				<text><![CDATA[Valor Total]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" pattern="###0.000;-###0.000" isBlankWhenNull="true">
 				<reportElement style="table_TD" positionType="Float" x="147" y="28" width="35" height="13"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
@@ -634,7 +634,7 @@ and  tipoambiente.am_estado is true limit 1;]]>
 				</textElement>
 				<text><![CDATA[IVA 12%]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
+			<textField pattern="###0.000;-###0.000" isBlankWhenNull="true">
 				<reportElement style="table_TD" positionType="Float" mode="Opaque" x="146" y="2" width="35" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
@@ -648,7 +648,7 @@ and  tipoambiente.am_estado is true limit 1;]]>
 				</textElement>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fac_total_base_gravaba}.setScale(2, RoundingMode.UP)]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField pattern="###0.000;-###0.000" isBlankWhenNull="true">
 				<reportElement style="table_TD" positionType="Float" x="147" y="67" width="35" height="13"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
@@ -738,7 +738,7 @@ and  tipoambiente.am_estado is true limit 1;]]>
 				</textElement>
 				<text><![CDATA[SubTotal 0%]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
+			<textField pattern="###0.000;-###0.000" isBlankWhenNull="true">
 				<reportElement style="table_TD" positionType="Float" x="147" y="15" width="35" height="13"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
@@ -780,7 +780,7 @@ and  tipoambiente.am_estado is true limit 1;]]>
 				</textElement>
 				<text><![CDATA[ICE %]]></text>
 			</staticText>
-			<textField isBlankWhenNull="true">
+			<textField pattern="###0.000;-###0.000" isBlankWhenNull="true">
 				<reportElement style="table_TD" positionType="Float" x="146" y="54" width="35" height="13"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
@@ -792,7 +792,7 @@ and  tipoambiente.am_estado is true limit 1;]]>
 				<textElement textAlignment="Right">
 					<font size="9"/>
 				</textElement>
-				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fac_valor_ice}.setScale(2, RoundingMode.FLOOR)]]></textFieldExpression>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{fac_valor_ice}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

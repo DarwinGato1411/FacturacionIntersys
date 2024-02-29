@@ -14,6 +14,7 @@ import com.ec.servicio.ServicioTipoIdentificacion;
 import com.ec.servicio.ServicioTransportista;
 import com.ec.untilitario.AduanaJson;
 import com.ec.untilitario.ArchivoUtils;
+import com.ec.untilitario.InfoPersona;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -74,8 +75,6 @@ public class NuevoConductor {
 
     public NuevoConductor() {
 
-       
-
         Session sess = Sessions.getCurrent();
         credential = (UserCredential) sess.getAttribute(EnumSesion.userCredential.getNombre());
 //        amRuc = credential.getUsuarioSistema().getUsuRuc();
@@ -89,7 +88,7 @@ public class NuevoConductor {
 
     @Command
     @NotifyChange({"transportista"})
-    public void buscarAduana() throws URISyntaxException, IOException  {
+    public void buscarAduana() throws URISyntaxException, IOException {
         if (transportista.getTrpCedula() != null) {
             if (!transportista.getTrpCedula().equals("")) {
                 String cedulaBuscar = "";
@@ -97,39 +96,13 @@ public class NuevoConductor {
                     cedulaBuscar = transportista.getTrpCedula().substring(0, 10);
                 } else {
                     Clients.showNotification("Debe ingresar mas de 10 digitos",
-                                Clients.NOTIFICATION_TYPE_ERROR, null, "middle_center", 2000, true);
+                            Clients.NOTIFICATION_TYPE_ERROR, null, "middle_center", 2000, true);
                     return;
                 }
-                AduanaJson aduana = ArchivoUtils.obtenerdatoAduana(cedulaBuscar);
-                if (aduana != null) {
+                InfoPersona aduana = new InfoPersona();
+                aduana = ArchivoUtils.obtenerPorCedula(cedulaBuscar);
+                transportista.setTrpRazonSocial(aduana.getNombre());
 
-                    String nombreApellido[] = aduana.getNombre().split(" ");
-                    String nombrePersona = "";
-                    String apellidoPersona = "";
-                    switch (nombreApellido.length) {
-                        case 1:
-                            apellidoPersona = nombreApellido[0];
-                            nombrePersona = "A";
-                            break;
-                        case 2:
-                            apellidoPersona = nombreApellido[0];
-                            nombrePersona = nombreApellido[1];
-                            break;
-                        case 3:
-                            apellidoPersona = nombreApellido[0] + " " + nombreApellido[1];
-                            nombrePersona = nombreApellido[2];
-                            break;
-                        case 4:
-                            apellidoPersona = nombreApellido[0] + " " + nombreApellido[1];
-                            nombrePersona = nombreApellido[2] + " " + nombreApellido[3];
-                            break;
-                        default:
-                            break;
-                    }
-                    transportista.setTrpRazonSocial(nombrePersona + " " + apellidoPersona);
-//                    transportista.setProvNomComercial(nombrePersona+" "+apellidoPersona);
-
-                }
             }
         }
 
@@ -138,10 +111,10 @@ public class NuevoConductor {
     @Command
     public void guardar() {
         if (transportista.getTrpCedula() != null
-                    && transportista.getTrpRazonSocial() != null
-                    && transportista.getTrpDireccion() != null
-                    && transportista.getTrpTelefono() != null
-                    && identificacionCompra != null) {
+                && transportista.getTrpRazonSocial() != null
+                && transportista.getTrpDireccion() != null
+                && transportista.getTrpTelefono() != null
+                && identificacionCompra != null) {
             transportista.setIdTipoIdentificacion(identificacionCompra);
             transportista.setCodTipoambiente(amb);
             if (accion.equals("create")) {

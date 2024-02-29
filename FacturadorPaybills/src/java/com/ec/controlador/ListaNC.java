@@ -94,7 +94,7 @@ public class ListaNC {
     }
 
     private void consultarFactura() {
-        lstCreditoDebitos = servicioNotaCredito.findBetweenFecha(fechainicio, fechafin);
+        lstCreditoDebitos = servicioNotaCredito.findBetweenFecha(fechainicio, fechafin,amb);
     }
 
     public List<NotaCreditoDebito> getLstCreditoDebitos() {
@@ -198,7 +198,7 @@ public class ListaNC {
     }
 
     private void consultarFacturas() {
-        lstCreditoDebitos = servicioNotaCredito.findLikeCliente(buscarCliente);
+        lstCreditoDebitos = servicioNotaCredito.findLikeCliente(buscarCliente,amb);
 
     }
 
@@ -212,7 +212,7 @@ public class ListaNC {
     }
 
     private void consultarFacturasForCedula() {
-        lstCreditoDebitos = servicioNotaCredito.findLikeCedula(buscarCedula);
+        lstCreditoDebitos = servicioNotaCredito.findLikeCedula(buscarCedula,amb);
 
     }
 
@@ -224,7 +224,7 @@ public class ListaNC {
     }
 
     private void consultarFacturaFecha() {
-        lstCreditoDebitos = servicioNotaCredito.findBetweenFecha(fechainicio, fechafin);
+        lstCreditoDebitos = servicioNotaCredito.findBetweenFecha(fechainicio, fechafin,amb);
     }
     //GRAFICA POR UBICACION
     JFreeChart jfreechartMes;
