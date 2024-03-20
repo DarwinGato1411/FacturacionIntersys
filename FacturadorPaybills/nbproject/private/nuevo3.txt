@@ -1,0 +1,14 @@
+select 
+  cab.SU_CODIGO|| cab.BO_CODIGO || cab.AJ_NUMERO factura,
+        (
+      -- VERIFICAR QUE VALORES VAN EN Cía_documento, Tp_documento EN EL ARCHIVO EXCEL NO ESTA DEFINIDO
+        JSON_OBJECT (
+        'Cía_documento' value '1',
+        'Tp_documento' value 'PI',
+        'Fecha_orden' value cab.AJ_FECHA                                 
+                      )
+            ) dato_json
+from IN_CABAJUS cab
+where cab.SU_CODIGO=19 and
+cab.BO_CODIGO=19 and
+cab.aj_NUMERO=80

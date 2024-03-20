@@ -60,11 +60,11 @@ public class ServicioFactura {
             DetalleFactura detalleFactura = null;
             for (DetalleFacturaDAO item : detalleFacturaDAOs) {
                 detalleFactura = new DetalleFactura(item.getCantidad(),
-                            item.getDescripcion(),
-                            item.getSubTotal(),
-                            item.getTotal(),
-                            item.getProducto(),
-                            factura, item.getTipoVenta());
+                        item.getDescripcion(),
+                        item.getSubTotal(),
+                        item.getTotal(),
+                        item.getProducto(),
+                        factura, item.getTipoVenta());
                 detalleFactura.setDetIva(item.getDetIva());
                 detalleFactura.setDetTotalconiva(item.getDetTotalconiva());
 
@@ -77,7 +77,7 @@ public class ServicioFactura {
                 detalleFactura.setDetSubtotaldescuentoporcantidad(item.getDetSubtotaldescuentoporcantidad());
                 detalleFactura.setDetCodTipoVenta(item.getCodTipoVenta());
                 detalleFactura.setDetCodIva("2");
-                detalleFactura.setDetCodPorcentaje(item.getProducto().getProdGrabaIva() ? "2" : "0");
+                detalleFactura.setDetCodPorcentaje(item.getProducto().getProdCodigoIva().toString());
                 detalleFactura.setDetTarifa(item.getProducto().getProdIva());
                 detalleFactura.setDetValorIce(item.getValorIce());
 
@@ -118,11 +118,11 @@ public class ServicioFactura {
             DetalleFactura detalleFactura = null;
             for (DetalleFacturaDAO item : detalleFacturaDAOs) {
                 detalleFactura = new DetalleFactura(item.getCantidad(),
-                            item.getDescripcion(),
-                            item.getSubTotal(),
-                            item.getTotal(),
-                            item.getProducto(),
-                            factura, item.getTipoVenta());
+                        item.getDescripcion(),
+                        item.getSubTotal(),
+                        item.getTotal(),
+                        item.getProducto(),
+                        factura, item.getTipoVenta());
                 detalleFactura.setDetIva(item.getDetIva());
                 detalleFactura.setDetTotalconiva(item.getDetTotalconiva());
 //                servicioDetalleFactura.modificar(detalleFactura);
@@ -149,11 +149,11 @@ public class ServicioFactura {
             DetalleFactura detalleFactura = null;
             for (DetalleFacturaDAO item : detalleFacturaDAOs) {
                 detalleFactura = new DetalleFactura(item.getCantidad(),
-                            item.getDescripcion(),
-                            item.getSubTotal(),
-                            item.getTotal(),
-                            item.getProducto(),
-                            factura, item.getTipoVenta());
+                        item.getDescripcion(),
+                        item.getSubTotal(),
+                        item.getTotal(),
+                        item.getProducto(),
+                        factura, item.getTipoVenta());
                 detalleFactura.setDetSubtotaldescuento(item.getSubTotalDescuento());
                 detalleFactura.setDetTotaldescuento(item.getDetTotaldescuento());
                 detalleFactura.setDetPordescuento(item.getDetPordescuento());
@@ -362,7 +362,7 @@ public class ServicioFactura {
         return facturas;
     }
 
-    public List<Factura> FindLikeCliente(String cliente,Tipoambiente codTipoambiente) {
+    public List<Factura> FindLikeCliente(String cliente, Tipoambiente codTipoambiente) {
 
         List<Factura> listaFacturas = new ArrayList<Factura>();
         try {
@@ -474,7 +474,7 @@ public class ServicioFactura {
 
         return listaFacturas;
     }
-    
+
     public List<Factura> findAllProformas(Tipoambiente codTipoAmbiente) {
 
         List<Factura> listaFacturas = new ArrayList<Factura>();
@@ -483,9 +483,9 @@ public class ServicioFactura {
             em = HelperPersistencia.getEMF();
             em.getTransaction().begin();
             Query query = em.createQuery("SELECT f FROM Factura f WHERE  f.facTipo='PROF' AND f.cod_tipoambiente=:codTipoAmbiente ORDER BY f.facFecha DESC");
-           query.setParameter("codTipoAmbiente", codTipoAmbiente);
+            query.setParameter("codTipoAmbiente", codTipoAmbiente);
             query.setMaxResults(400);
-      
+
             listaFacturas = (List<Factura>) query.getResultList();
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -1173,6 +1173,7 @@ public class ServicioFactura {
 
         return listaFacturas;
     }
+
     public Factura findTipoambienteNumFactura(Tipoambiente codTipoambiente, Integer numero) {
 
         List<Factura> listaFacturas = new ArrayList<Factura>();
@@ -1184,7 +1185,7 @@ public class ServicioFactura {
             Query query = em.createQuery("SELECT f FROM Factura f WHERE f.facTipo='FACT' AND f.facNumero IS NOT NULL AND f.cod_tipoambiente=:codTipoambiente AND f.facNumero=:numero ORDER BY f.facNumero DESC");
             query.setParameter("codTipoambiente", codTipoambiente);
             query.setParameter("numero", numero);
-            
+
 //           query.setParameter("codigoUsuario", factura);
             listaFacturas = (List<Factura>) query.getResultList();
             if (listaFacturas.size() > 0) {
@@ -1201,5 +1202,5 @@ public class ServicioFactura {
 
         return facturas;
     }
- 
+
 }

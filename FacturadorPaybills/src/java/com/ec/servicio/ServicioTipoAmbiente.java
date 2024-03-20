@@ -283,4 +283,38 @@ public class ServicioTipoAmbiente {
 
         return tipoambiente;
     }
+     public List<Tipoambiente> findALlTipoambientePorUsuarioAdm(String usuario, String amCodigo, String plan) {
+
+        List<Tipoambiente> listaTipoambientes = new ArrayList<Tipoambiente>();
+        Tipoambiente tipoambiente = null;
+        try {
+            //Connection connection = em.unwrap(Connection.class);
+            String SQL = "";
+            String QUERY = "SELECT a FROM Tipoambiente a WHERE (a.amRuc like :amRuc or UPPER(a.idUsuario.usuNombre) like :usuNombre) AND a.amCodigo=:amCodigo AND a.amEstado=:amEstado ";
+            String WHERE = " ";
+            String ORDER = " ORDER BY a.idUsuario.usuNombre ASC";
+            em = HelperPersistencia.getEMF();
+            em.getTransaction().begin();
+            if (!plan.equals("T")) {
+                WHERE = " AND a.idUsuario.usuIlimitado=:usuIlimitado";
+            }
+            Query query = em.createQuery(QUERY + WHERE + ORDER);
+            query.setParameter("usuNombre", "%" + usuario + "%");
+            query.setParameter("amRuc", "%" + usuario + "%");
+            query.setParameter("amEstado", Boolean.TRUE);
+            query.setParameter("amCodigo", amCodigo);
+            if (!plan.equals("T")) {
+                query.setParameter("usuIlimitado", plan.equals("I") ? Boolean.TRUE : Boolean.FALSE);
+            }
+            listaTipoambientes = (List<Tipoambiente>) query.getResultList();
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            System.out.println("findALlTipoambientePorUsuarioAdm " + e.getMessage());
+        } finally {
+            em.close();
+        }
+
+        return listaTipoambientes;
+    }
 }

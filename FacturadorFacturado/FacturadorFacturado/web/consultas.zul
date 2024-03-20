@@ -1,6 +1,6 @@
 <?link rel="stylesheet" type="text/css" href="/css/boostrap/bootstrap.css"?>   
 <?link rel="stylesheet" type="text/css" href="/css/style.css"?>
-<?link rel="icon" type="image/x-icon" href="/iconos/deckxel.ico"?>  
+  
 <?link rel="stylesheet" type="text/css" href="/css/app/menu.css"?>
 <?page title="Consultas" contentType="text/html;charset=UTF-8"?>
 

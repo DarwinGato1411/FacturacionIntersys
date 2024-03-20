@@ -119,6 +119,7 @@
                                     <listcell zclass = "mycss-listcell" style="font-size:12px;background:#F8F9F9">    
                                         <image src="/iconos/editar.png"
                                             class="grow "
+                                             if="${each.cliCedula!='9999999999999'}"
                                             onClick="@command('actualizarCliente',valor=each)" 
                                             tooltiptext="Modificar cliente"/>
                                         

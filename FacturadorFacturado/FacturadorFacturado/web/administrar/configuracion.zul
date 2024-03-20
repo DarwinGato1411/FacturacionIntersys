@@ -189,15 +189,15 @@
                     <div class="container_row_input">
                     
                         <div class="wrapper_input_mod">
-                            <span>Clave SRI: </span>
+                            <span>Clave firma: </span>
                             <div class="wrapper_input_text">
                                 <div class="fa-solid fa-key icon"></div>
                                 <textbox 
                                     type="password"
                                     value="@bind(vm.tipoambiente.amClaveAccesoSri)" 
-                                    placeholder="Clave SRI"
+                                    placeholder="Clave firma electrónica"
                                     class="input_text"
-                                    tooltiptext="Clave SRI" 
+                                    tooltiptext="Clave firma electrónica" 
                                 />
                             </div>
                         </div>

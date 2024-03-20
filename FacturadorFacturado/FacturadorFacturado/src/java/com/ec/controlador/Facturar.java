@@ -294,6 +294,18 @@ public class Facturar extends SelectorComposer<Component> {
 //        UserCredential credential = new UserCredential();
     private String amRuc = "";
 
+    /*CAMBIO IVA*/
+    private BigDecimal ivaCotizacion5 = BigDecimal.ZERO;
+    private BigDecimal ivaCotizacion13 = BigDecimal.ZERO;
+    private BigDecimal ivaCotizacion14 = BigDecimal.ZERO;
+    private BigDecimal ivaCotizacion15 = BigDecimal.ZERO;
+    private BigDecimal subTotalCotizacion5 = BigDecimal.ZERO;
+    private BigDecimal subTotalCotizacion12 = BigDecimal.ZERO;
+    private BigDecimal subTotalCotizacion13 = BigDecimal.ZERO;
+    private BigDecimal subTotalCotizacion14 = BigDecimal.ZERO;
+    private BigDecimal subTotalCotizacion15 = BigDecimal.ZERO;
+//       private BigDecimal totalDescuento = BigDecimal.ZERO;
+
     @AfterCompose
     public void afterCompose(@ExecutionArgParam("valor") ParamFactura valor, @ContextParam(ContextType.VIEW) Component view) {
         Selectors.wireComponents(view, this, false);
@@ -352,9 +364,9 @@ public class Facturar extends SelectorComposer<Component> {
 
         }
         if (servicioCierreCaja.findALlCierreCajaForFechaIdUsuario(new Date(), credential.getUsuarioSistema()).isEmpty()
-                    && credential.getUsuarioSistema().getUsuNivel() != 1) {
+                && credential.getUsuarioSistema().getUsuNivel() != 1) {
             org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                        "/nuevo/aperturacaja.zul", null, null);
+                    "/nuevo/aperturacaja.zul", null, null);
             window.doModal();
             if (servicioCierreCaja.findALlCierreCajaForFechaIdUsuario(new Date(), credential.getUsuarioSistema()).isEmpty()) {
                 authService.logout();
@@ -395,7 +407,7 @@ public class Facturar extends SelectorComposer<Component> {
         }
 
         PATH_BASE = amb.getAmDirBaseArchivos() + File.separator
-                    + amb.getAmDirXml();
+                + amb.getAmDirXml();
         partida = amb.getAmDireccionMatriz();
 
     }
@@ -514,8 +526,8 @@ public class Facturar extends SelectorComposer<Component> {
         numeroFacturaTexto();
     }
 //numero de guia
-    
-     private void numeroGuia() {
+
+    private void numeroGuia() {
         Guiaremision recuperada = servicioGuia.findUltimaGuiaremision();
         if (recuperada != null) {
             // System.out.println("numero de factura " + recuperada);
@@ -526,8 +538,6 @@ public class Facturar extends SelectorComposer<Component> {
 //            numeroGuiaText = "000000001";
         }
     }
-
-  
 
     private void numeroTexto(Integer valor) {
         numeroGuiaText = "";
@@ -589,14 +599,16 @@ public class Facturar extends SelectorComposer<Component> {
 
     }
 
-    /*AGREGAMOS DESDE LA LSITA */
     @Command
-    @NotifyChange({"listaDetalleFacturaDAOMOdel", "subTotalCotizacion", "ivaCotizacion", "valorTotalCotizacion", "totalDescuento", "buscarNombreProd", "valorTotalInicialVent", "descuentoValorFinal", "subTotalBaseCero", "listaProducto", "totalItems", "valorIce"})
+    @NotifyChange({"listaDetalleFacturaDAOMOdel", "subTotalCotizacion", "ivaCotizacion", "valorTotalCotizacion",
+        "totalDescuento", "buscarNombreProd", "valorTotalInicialVent", "descuentoValorFinal", "subTotalBaseCero", "valorIce",
+        "listaProducto", "totalItems", "subTotalCotizacion", "subTotalCotizacion13", "subTotalCotizacion14", "subTotalCotizacion15", "subTotalCotizacion5",
+        "ivaCotizacion5", "ivaCotizacion13", "ivaCotizacion14", "ivaCotizacion15"})
     public void agregarItemLista(@BindingParam("valor") Producto producto) {
 
         if (parametrizar.getParNumRegistrosFactura().intValue() <= listaDetalleFacturaDAOMOdel.size()) {
             Clients.showNotification("Numero de registros permitidos imprima y genere otra factura",
-                        Clients.NOTIFICATION_TYPE_INFO, null, "middle_center", 5000, true);
+                    Clients.NOTIFICATION_TYPE_INFO, null, "middle_center", 5000, true);
             return;
         }
         /*calcula con el iva para todo el 12%*/
@@ -621,7 +633,7 @@ public class Facturar extends SelectorComposer<Component> {
             Kardex kardex = servicioKardex.FindALlKardexs(productoBuscado);
             if (kardex.getKarTotal().intValue() < 1) {
                 Clients.showNotification("Verifique el stock del producto cuenta con " + kardex.getKarTotal().intValue() + " en estock",
-                            Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
+                        Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
                 agregarRegistroVacio();
                 return;
             }
@@ -755,7 +767,7 @@ public class Facturar extends SelectorComposer<Component> {
             final HashMap<String, ParamFactura> map = new HashMap<String, ParamFactura>();
             map.put("valor", paramFactura);
             org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                        "/venta/buscarproducto.zul", null, map);
+                    "/venta/buscarproducto.zul", null, map);
             window.doModal();
             productoBuscado = servicioProducto.findByProdCodigo(codigoBusqueda, amb);
             if (productoBuscado == null) {
@@ -766,7 +778,7 @@ public class Facturar extends SelectorComposer<Component> {
                 Kardex kardex = servicioKardex.FindALlKardexs(productoBuscado);
                 if (kardex.getKarTotal().intValue() < 1) {
                     Clients.showNotification("Verifique el stock del producto cuenta con " + kardex.getKarTotal().intValue() + " en estock",
-                                Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
+                            Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
                     agregarRegistroVacio();
                     return;
                 }
@@ -976,7 +988,7 @@ public class Facturar extends SelectorComposer<Component> {
         if (buscadoPorCodigo == null) {
             valor.setCodigo("");
             Clients.showNotification("No existe el producto",
-                        Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 2000, true);
+                    Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 2000, true);
             return;
         }
 
@@ -989,7 +1001,7 @@ public class Facturar extends SelectorComposer<Component> {
             Kardex kardex = servicioKardex.FindALlKardexs(productoBuscado);
             if (kardex.getKarTotal().intValue() < 1) {
                 Clients.showNotification("Verifique el stock del producto cuenta con " + kardex.getKarTotal().intValue() + " en estock",
-                            Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
+                        Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
                 agregarRegistroVacio();
                 return;
             }
@@ -1156,12 +1168,12 @@ public class Facturar extends SelectorComposer<Component> {
 
                 valor.setTotalInicial(valor.getTotal());
             }
-            
+
             if (valor.getEsProducto()) {
                 if (valor.getTotalInicial().doubleValue() < valor.getTotal().doubleValue()) {
 
                     Clients.showNotification("En el producto no puede colocar un precio superior al registrado, \n Modifique a servicio para colocar un precio superior",
-                                Clients.NOTIFICATION_TYPE_INFO, null, "middle_center", 5000, true);
+                            Clients.NOTIFICATION_TYPE_INFO, null, "middle_center", 5000, true);
                     return;
                 }
             }
@@ -1170,7 +1182,6 @@ public class Facturar extends SelectorComposer<Component> {
                 BigDecimal subTotal = valor.getTotal().divide(factorSacarSubtotal, 8, RoundingMode.FLOOR);
                 valor.setSubTotal(subTotal);
             }
-            
 
             BigDecimal factorice = valor.getProducto().getProdGrabaIce() ? (valor.getProducto().getProdPorcentajeIce().divide(BigDecimal.valueOf(100.0))) : BigDecimal.ZERO;
             BigDecimal factorSacarSubtotalIce = (factorice.add(BigDecimal.ONE));
@@ -1217,8 +1228,8 @@ public class Facturar extends SelectorComposer<Component> {
                     valorDescuento = ArchivoUtils.redondearDecimales(valor.getSubTotal(), 8).subtract(ArchivoUtils.redondearDecimales(valor.getSubTotalDescuento(), 8));
                     valorDescuento = valorDescuento.doubleValue() < 0 ? BigDecimal.ZERO : valorDescuento;
                 }
-                if (valorDescuento.doubleValue()< 0) {
-                    valorDescuento=BigDecimal.ZERO;
+                if (valorDescuento.doubleValue() < 0) {
+                    valorDescuento = BigDecimal.ZERO;
                 }
                 valor.setDetValdescuento(valorDescuento);
                 //valor del iva con descuento
@@ -1330,7 +1341,6 @@ public class Facturar extends SelectorComposer<Component> {
         setListaDetalleFacturaDAOMOdel(new ListModelList<DetalleFacturaDAO>(getListaDetalleFacturaDAODatos()));
         ((ListModelList<DetalleFacturaDAO>) listaDetalleFacturaDAOMOdel).setMultiple(true);
     }
-    
 
     @Command
     public void seleccionarRegistros() {
@@ -1589,11 +1599,11 @@ public class Facturar extends SelectorComposer<Component> {
         final HashMap<String, ParamFactura> map = new HashMap<String, ParamFactura>();
         map.put("valor", paramFactura);
         org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                    "/venta/buscarcliente.zul", null, map);
+                "/venta/buscarcliente.zul", null, map);
         window.doModal();
         System.out.println("clinete de la lsitas buscarCliente " + buscarCliente);
         clienteBuscado = servicioCliente.FindClienteForCedula(buscarCliente, amb);
-        clienteBuscado=buscarClienteSelected;
+        clienteBuscado = buscarClienteSelected;
 //        if (clienteBuscado == null) {
 //            clienteBuscado = servicioCliente.findClienteLikeCedula("999999999");
 //        }
@@ -1644,7 +1654,7 @@ public class Facturar extends SelectorComposer<Component> {
         final HashMap<String, ParamFactura> map = new HashMap<String, ParamFactura>();
         map.put("valor", paramFactura);
         org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                    "/venta/listanotaentrega.zul", null, map);
+                "/venta/listanotaentrega.zul", null, map);
         window.doModal();
         buscarCliente = paramFactura.getCedula();
         listaDetalleFacturaDAODatos.clear();
@@ -1698,7 +1708,7 @@ public class Facturar extends SelectorComposer<Component> {
     public void nuevoCliente() {
 
         org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                    "/nuevo/cliente.zul", null, null);
+                "/nuevo/cliente.zul", null, null);
         window.doModal();
     }
 
@@ -1728,14 +1738,16 @@ public class Facturar extends SelectorComposer<Component> {
     public void seleccionarClienteLista(@BindingParam("cliente") Cliente valor) {
         System.out.println("cliente seleccionado " + valor.getCliCedula());
         buscarCliente = valor.getCliCedula();
-        buscarClienteSelected=valor;
+        buscarClienteSelected = valor;
         windowClienteBuscar.detach();
 
     }
 
-    //busqueda del producto
     @Command
-    @NotifyChange({"listaDetalleFacturaDAOMOdel", "subTotalCotizacion", "ivaCotizacion", "valorTotalCotizacion", "subTotalBaseCero", "totalItems", "valorTotalInicialVent"})
+    @NotifyChange({"listaDetalleFacturaDAOMOdel", "subTotalCotizacion", "ivaCotizacion", "valorTotalCotizacion",
+        "totalDescuento", "buscarNombreProd", "valorTotalInicialVent", "descuentoValorFinal", "subTotalBaseCero", "valorIce",
+        "listaProducto", "totalItems", "subTotalCotizacion", "subTotalCotizacion13", "subTotalCotizacion14", "subTotalCotizacion15", "subTotalCotizacion5",
+        "ivaCotizacion5", "ivaCotizacion13", "ivaCotizacion14", "ivaCotizacion15"})
     public void eliminarRegistros() {
         if (registrosSeleccionados.size() > 0) {
 //
@@ -1751,7 +1763,7 @@ public class Facturar extends SelectorComposer<Component> {
                 calcularValoresTotales();
             } else {
                 Clients.showNotification("No tiene permisos para eliminar, verifique el usuario y contraseña",
-                            Clients.NOTIFICATION_TYPE_INFO, null, "middle_center", 5000, true);
+                        Clients.NOTIFICATION_TYPE_INFO, null, "middle_center", 5000, true);
             }
 
         } else {
@@ -1812,25 +1824,127 @@ public class Facturar extends SelectorComposer<Component> {
         BigDecimal sumaDeItems = BigDecimal.ZERO;
         BigDecimal valorTotalIce = BigDecimal.ZERO;
         BigDecimal valorTotalIcePorProducto = BigDecimal.ZERO;
-        BigDecimal totalCompleto = BigDecimal.ZERO;
 
+        /*CAMBIO IVA*/
+        BigDecimal valorTotal5 = BigDecimal.ZERO;
+        BigDecimal valorTotal13 = BigDecimal.ZERO;
+        BigDecimal valorTotal14 = BigDecimal.ZERO;
+        BigDecimal valorTotal15 = BigDecimal.ZERO;
+        BigDecimal valorIva5 = BigDecimal.ZERO;
+        BigDecimal valorIva13 = BigDecimal.ZERO;
+        BigDecimal valorIva14 = BigDecimal.ZERO;
+        BigDecimal valorIva15 = BigDecimal.ZERO;
+        BigDecimal descuentoMasIva = BigDecimal.ZERO;
+        BigDecimal valorDescuentoIvaTotal = BigDecimal.ZERO;
+        BigDecimal totalizado = BigDecimal.ZERO;
         List<DetalleFacturaDAO> listaPedido = listaDetalleFacturaDAOMOdel.getInnerList();
         if (listaPedido.size() > 0) {
             for (DetalleFacturaDAO item : listaPedido) {
                 sumaDeItems = sumaDeItems.add(BigDecimal.ONE);
                 if (item.getProducto() != null) {
-                    totalCompleto=totalCompleto.add(item.getDetTotalconivadescuento());
-                    valorTotal = valorTotal.add(item.getProducto().getProdGrabaIva() ? item.getSubTotalDescuento().multiply(item.getCantidad()) : BigDecimal.ZERO);
+//                    valorTotal = valorTotal.add(item.getProducto().getProdGrabaIva() ? item.getSubTotalDescuento().multiply(item.getCantidad()) : BigDecimal.ZERO);
+                    totalizado = totalizado.add(item.getDetTotalconivadescuento());
+                    BigDecimal factIVA = BigDecimal.ZERO;
+                    BigDecimal factMASIVA = BigDecimal.ZERO;
+                    /*SUMAR TOTALES POR IVA*/
+                    Integer comparaIva = item.getProducto().getProdIva().intValue();
+                    switch (comparaIva) {
+                        case 0:
+                            // secuencia de sentencias.
+                            baseCero = baseCero.add(!item.getProducto().getProdGrabaIva()
+                                    ? item.getSubTotalDescuento().multiply(item.getCantidad())
+                                    : BigDecimal.ZERO);
+
+                            valorDescuentoIvaTotal = valorDescuentoIvaTotal.add(item.getDetCantpordescuento());
+                            break;
+                        case 5:
+
+                            // secuencia de sentencias.
+                            valorTotal5 = valorTotal5.add(item.getProducto().getProdGrabaIva()
+                                    ? item.getSubTotalDescuento().multiply(item.getCantidad())
+                                    : BigDecimal.ZERO);
+                            valorIva5 = valorIva5.add(item.getDetIva());
+                            System.out.println("valorIva" + valorIva);
+                            /*CALCULA EL DECUENTO ICLUIDO IVA*/
+                            factIVA = (item.getProducto().getProdIva().divide(BigDecimal.valueOf(100.0)));
+                            factMASIVA = (factIVA.add(BigDecimal.ONE));
+                            descuentoMasIva = item.getDetCantpordescuento().multiply(factMASIVA);
+                            valorDescuentoIvaTotal = valorDescuentoIvaTotal.add(descuentoMasIva);
+                            break;
+
+                        case 12:
+                            // secuencia de sentencias.
+                            valorTotal = valorTotal.add(item.getProducto().getProdGrabaIva()
+                                    ? item.getSubTotalDescuento().multiply(item.getCantidad())
+                                    : BigDecimal.ZERO);
+
+                            valorIva = valorIva.add(item.getDetIva());
+                            System.out.println("valorIva" + valorIva);
+                            /*CALCULA EL DECUENTO ICLUIDO IVA*/
+ /*CALCULA EL DECUENTO ICLUIDO IVA*/
+                            factIVA = (item.getProducto().getProdIva().divide(BigDecimal.valueOf(100.0)));
+                            factMASIVA = (factIVA.add(BigDecimal.ONE));
+                            descuentoMasIva = item.getDetCantpordescuento().multiply(factMASIVA);
+                            valorDescuentoIvaTotal = valorDescuentoIvaTotal.add(descuentoMasIva);
+                            break;
+                        case 13:
+                            // secuencia de sentencias.
+                            valorTotal13 = valorTotal13.add(item.getProducto().getProdGrabaIva()
+                                    ? item.getSubTotalDescuento().multiply(item.getCantidad())
+                                    : BigDecimal.ZERO);
+
+                            valorIva13 = valorIva13.add(item.getDetIva());
+                            System.out.println("valorIva" + valorIva);
+
+                            /*CALCULA EL DECUENTO ICLUIDO IVA*/
+                            factIVA = (item.getProducto().getProdIva().divide(BigDecimal.valueOf(100.0)));
+                            factMASIVA = (factIVA.add(BigDecimal.ONE));
+                            descuentoMasIva = item.getDetCantpordescuento().multiply(factMASIVA);
+                            valorDescuentoIvaTotal = valorDescuentoIvaTotal.add(descuentoMasIva);
+                            break;
+                        case 14:
+                            // secuencia de sentencias.
+                            valorTotal14 = valorTotal14.add(item.getProducto().getProdGrabaIva()
+                                    ? item.getSubTotalDescuento().multiply(item.getCantidad())
+                                    : BigDecimal.ZERO);
+
+                            valorIva14 = valorIva14.add(item.getDetIva());
+                            System.out.println("valorIva" + valorIva);
+
+                            /*CALCULA EL DECUENTO ICLUIDO IVA*/
+                            factIVA = (item.getProducto().getProdIva().divide(BigDecimal.valueOf(100.0)));
+                            factMASIVA = (factIVA.add(BigDecimal.ONE));
+                            descuentoMasIva = item.getDetCantpordescuento().multiply(factMASIVA);
+                            valorDescuentoIvaTotal = valorDescuentoIvaTotal.add(descuentoMasIva);
+                            break;
+                        case 15:
+                            // secuencia de sentencias.
+                            valorTotal15 = valorTotal15.add(item.getProducto().getProdGrabaIva()
+                                    ? item.getSubTotalDescuento().multiply(item.getCantidad())
+                                    : BigDecimal.ZERO);
+
+                            valorIva15 = valorIva15.add(item.getDetIva());
+                            System.out.println("valorIva" + valorIva);
+
+                            /*CALCULA EL DECUENTO ICLUIDO IVA*/
+                            factIVA = (item.getProducto().getProdIva().divide(BigDecimal.valueOf(100.0)));
+                            factMASIVA = (factIVA.add(BigDecimal.ONE));
+                            descuentoMasIva = item.getDetCantpordescuento().multiply(factMASIVA);
+                            valorDescuentoIvaTotal = valorDescuentoIvaTotal.add(descuentoMasIva);
+                            break;
+                        default:
+                        // Default secuencia de sentencias.
+                    }
 
                     /*productos que graban ICE*/
                     valorTotalIcePorProducto = item.getValorIce();
                     valorTotalIce = valorTotalIcePorProducto.add(valorTotalIce);
 
-                    valorIva = valorIva.add(item.getDetIva());
+//                    valorIva = valorIva.add(item.getDetIva());
 //                    valorTotalConIva = valorTotalConIva.add(item.getDetTotalconivadescuento());
                     valorDescuento = valorDescuento.add(item.getDetCantpordescuento());
                     valorTotalInicial = valorTotalInicial.add(item.getTotalInicial().multiply(item.getCantidad()));
-                    baseCero = baseCero.add(!item.getProducto().getProdGrabaIva() ? item.getSubTotalDescuento().multiply(item.getCantidad()) : BigDecimal.ZERO);
+//                    baseCero = baseCero.add(!item.getProducto().getProdGrabaIva() ? item.getSubTotalDescuento().multiply(item.getCantidad()) : BigDecimal.ZERO);
                     /*COSTO SIN SUBSIDIO*/
 
                     if (item.getProducto().getProdTieneSubsidio().equals("S")) {
@@ -1846,6 +1960,17 @@ public class Facturar extends SelectorComposer<Component> {
             System.out.println("valor total:::: subTotalCotizacion " + valorTotal);
             //valorTotal.setScale(5, RoundingMode.UP);
             try {
+
+                /*CAMBIO IVA */
+                subTotalCotizacion5 = ArchivoUtils.redondearDecimales(valorTotal5, 2);
+                subTotalCotizacion13 = ArchivoUtils.redondearDecimales(valorTotal13, 2);
+                subTotalCotizacion14 = ArchivoUtils.redondearDecimales(valorTotal14, 2);
+                subTotalCotizacion15 = ArchivoUtils.redondearDecimales(valorTotal15, 2);
+                ivaCotizacion5 = ArchivoUtils.redondearDecimales(valorIva5, 2);
+                ivaCotizacion13 = ArchivoUtils.redondearDecimales(valorIva13, 2);
+                ivaCotizacion14 = ArchivoUtils.redondearDecimales(valorIva14, 2);
+                ivaCotizacion15 = ArchivoUtils.redondearDecimales(valorIva15, 2);
+
                 subsidioTotal = sumaSubsidio;
                 subTotalCotizacion = ArchivoUtils.redondearDecimales(valorTotal, 3);
                 // subTotalCotizacion.setScale(5, RoundingMode.UP);
@@ -1858,8 +1983,7 @@ public class Facturar extends SelectorComposer<Component> {
                 valorIce = ArchivoUtils.redondearDecimales(valorTotalIce, 3);
 
                 // ivaCotizacion.setScale(5, RoundingMode.UP);
-                valorTotalCotizacion = totalCompleto;
-//                valorTotalCotizacion = subTotalCotizacion.add(subTotalBaseCero.add(ivaCotizacion).add(valorIce));
+                valorTotalCotizacion = totalizado;
                 // valorTotalCotizacion.setScale(5, RoundingMode.UP);
 
                 valorTotalInicialVent = valorTotalInicial;
@@ -1889,22 +2013,22 @@ public class Facturar extends SelectorComposer<Component> {
         try {
 
             String folderGenerados = PATH_BASE + File.separator + amb.getAmGenerados()
-                        + File.separator + new Date().getYear()
-                        + File.separator + new Date().getMonth();
+                    + File.separator + new Date().getYear()
+                    + File.separator + new Date().getMonth();
             String folderEnviarCliente = PATH_BASE + File.separator + amb.getAmEnviocliente()
-                        + File.separator + new Date().getYear()
-                        + File.separator + new Date().getMonth();
+                    + File.separator + new Date().getYear()
+                    + File.separator + new Date().getMonth();
             String folderFirmado = PATH_BASE + File.separator + amb.getAmFirmados()
-                        + File.separator + new Date().getYear()
-                        + File.separator + new Date().getMonth();
+                    + File.separator + new Date().getYear()
+                    + File.separator + new Date().getMonth();
 
             String foldervoAutorizado = PATH_BASE + File.separator + amb.getAmAutorizados()
-                        + File.separator + new Date().getYear()
-                        + File.separator + new Date().getMonth();
+                    + File.separator + new Date().getYear()
+                    + File.separator + new Date().getMonth();
 
             String folderNoAutorizados = PATH_BASE + File.separator + amb.getAmNoAutorizados()
-                        + File.separator + new Date().getYear()
-                        + File.separator + new Date().getMonth();
+                    + File.separator + new Date().getYear()
+                    + File.separator + new Date().getMonth();
 
             /*EN EL CASO DE NO EXISTIR LOS DIRECTORIOS LOS CREA*/
             File folderGen = new File(folderGenerados);
@@ -1942,7 +2066,7 @@ public class Facturar extends SelectorComposer<Component> {
                 if (transportista == null || numeroPlaca.equals("")) {
 
                     Clients.showNotification("Para generar una guia debe seleccionar un conductor e ingresar la placa",
-                                Clients.NOTIFICATION_TYPE_INFO, null, "middle_center", 3000, true);
+                            Clients.NOTIFICATION_TYPE_INFO, null, "middle_center", 3000, true);
                     return;
 
                 }
@@ -2038,12 +2162,6 @@ public class Facturar extends SelectorComposer<Component> {
             factura.setIdReferencia(referenciaSelected);
             factura.setFacValorIce(valorIce);
             /*PARA MECANICAS*/
-//            factura.setFacPlaca(facPlaca);
-//            factura.setFacMarca(facMarca);
-//            factura.setFacCilindraje(facCilindraje);
-//            factura.setFacChasis(facChasis);
-//            factura.setFacAnio(facAnio);
-//            factura.setFacKilometraje(facKilometraje);
 
             if (tipoVenta.equals("SINF")) {
                 factura.setFacNumero(0);
@@ -2076,9 +2194,22 @@ public class Facturar extends SelectorComposer<Component> {
             if (accion.equals("create")) {
                 factura.setIdUsuario(credential.getUsuarioSistema());
             }
-            factura.setFacSubtotal(subTotalCotizacion.add(subTotalBaseCero));
+
+            /*CAMBIOS IVA*/
+            factura.setFacSubt5(subTotalCotizacion5);
+            factura.setFacSubt13(subTotalCotizacion13);
+            factura.setFacSubt14(subTotalCotizacion14);
+            factura.setFacSubt15(subTotalCotizacion15);
+
+            factura.setFacIva5(ivaCotizacion5);
+            factura.setFacIva13(ivaCotizacion13);
+            factura.setFacIva14(ivaCotizacion14);
+            factura.setFacIva15(ivaCotizacion15);
+            factura.setFacSubtotal(subTotalCotizacion.add(subTotalBaseCero).add(subTotalCotizacion5).add(subTotalCotizacion15).add(ivaCotizacion13).add(ivaCotizacion14));
+
             factura.setFacIva(ivaCotizacion);
             factura.setFacTotal(valorTotalCotizacion);
+
             // si esta pagada coloca el saldo en cero
             factura.setFacSaldoAmortizado(estdoFactura.equals("PA") ? BigDecimal.ZERO : valorTotalCotizacion);
             factura.setFacDescuento(totalDescuento);
@@ -2195,7 +2326,7 @@ public class Facturar extends SelectorComposer<Component> {
                     factura.setIdCliente(clienteBuscado);
                     /*GENERAMOS LA CLAVE DE ACCESO PARA ENVIAR LA FACTURA DIRECTAMENTE ASI NO ESTE 
                     AUTORIZADA*/
-                    String claveAcceso = ArchivoUtils.generaClave(factura.getFacFecha(), "01", amb.getAmRuc(), amb.getAmCodigo(), amb.getAmEstab()+amb.getAmPtoemi(), factura.getFacNumeroText(), "12345678", "1");
+                    String claveAcceso = ArchivoUtils.generaClave(factura.getFacFecha(), "01", amb.getAmRuc(), amb.getAmCodigo(), amb.getAmEstab() + amb.getAmPtoemi(), factura.getFacNumeroText(), "12345678", "1");
                     factura.setFacClaveAcceso(claveAcceso);
                     factura.setFacClaveAutorizacion(claveAcceso);
 
@@ -2232,7 +2363,7 @@ public class Facturar extends SelectorComposer<Component> {
                         guiaremision.setPuntoemision(factura.getPuntoemision());
                         guiaremision.setCodestablecimiento(factura.getCodestablecimiento());
                         guiaremision.setEstadosri("PENDIENTE");
-                        String claveAccesoGuia = ArchivoUtils.generaClave(guiaremision.getFacFecha(), "06", amb.getAmRuc(), amb.getAmCodigo(),  amb.getAmEstab()+amb.getAmPtoemi(), guiaremision.getFacNumeroText(), "12345678", "1");
+                        String claveAccesoGuia = ArchivoUtils.generaClave(guiaremision.getFacFecha(), "06", amb.getAmRuc(), amb.getAmCodigo(), amb.getAmEstab() + amb.getAmPtoemi(), guiaremision.getFacNumeroText(), "12345678", "1");
                         guiaremision.setFacClaveAcceso(claveAccesoGuia);
                         guiaremision.setFacClaveAutorizacion(claveAccesoGuia);
                         guiaremision.setCodTipoambiente(factura.getCod_tipoambiente().getCodTipoambiente());
@@ -2464,7 +2595,7 @@ public class Facturar extends SelectorComposer<Component> {
 
                 //  con = emf.unwrap(Connection.class);
                 String reportFile = Executions.getCurrent().getDesktop().getWebApp()
-                            .getRealPath("/reportes");
+                        .getRealPath("/reportes");
                 String reportPath = "";
 //                con = ConexionReportes.Conexion.conexion();
 
@@ -2509,7 +2640,7 @@ public class Facturar extends SelectorComposer<Component> {
                     map.put("pdf", fileContent);
 
                     org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                                "/venta/contenedorReporte.zul", null, map);
+                            "/venta/contenedorReporte.zul", null, map);
                     window.doModal();
 
                 }
@@ -2615,7 +2746,7 @@ public class Facturar extends SelectorComposer<Component> {
 
                 //  con = emf.unwrap(Connection.class);
                 String reportFile = Executions.getCurrent().getDesktop().getWebApp()
-                            .getRealPath("/reportes");
+                        .getRealPath("/reportes");
                 String reportPath = "";
 //                con = ConexionReportes.Conexion.conexion();
 
@@ -2757,7 +2888,7 @@ public class Facturar extends SelectorComposer<Component> {
 
             map.put("valor", factura);
             org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                        "/venta/detallepago.zul", null, map);
+                    "/venta/detallepago.zul", null, map);
             window.doModal();
         } catch (Exception e) {
             Messagebox.show("Error " + e.toString(), "Atención", Messagebox.OK, Messagebox.INFORMATION);
@@ -2979,7 +3110,7 @@ public class Facturar extends SelectorComposer<Component> {
 
             map.put("valor", valor);
             org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                        "/modificar/motocicleta.zul", null, map);
+                    "/modificar/motocicleta.zul", null, map);
             window.doModal();
         } catch (Exception e) {
             Messagebox.show("Error " + e.toString(), "Atención", Messagebox.OK, Messagebox.INFORMATION);
@@ -3034,7 +3165,7 @@ public class Facturar extends SelectorComposer<Component> {
             final HashMap<String, ParamFactura> map = new HashMap<String, ParamFactura>();
             map.put("valor", paramFactura);
             org.zkoss.zul.Window window = (org.zkoss.zul.Window) Executions.createComponents(
-                        "/venta/cambioprecio.zul", null, map);
+                    "/venta/cambioprecio.zul", null, map);
             window.doModal();
             productoBuscado = valor.getProducto();
             if (productoBuscado == null) {
@@ -3045,7 +3176,7 @@ public class Facturar extends SelectorComposer<Component> {
                 Kardex kardex = servicioKardex.FindALlKardexs(productoBuscado);
                 if (kardex.getKarTotal().intValue() < 1) {
                     Clients.showNotification("Verifique el stock del producto cuenta con " + kardex.getKarTotal().intValue() + " en estock",
-                                Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
+                            Clients.NOTIFICATION_TYPE_ERROR, null, "end_center", 3000, true);
                     agregarRegistroVacio();
                     return;
                 }
@@ -3092,11 +3223,11 @@ public class Facturar extends SelectorComposer<Component> {
                     BigDecimal valorTotalIvaDesc = costVentaTipoCliente.subtract(valorDescuentoIva);
                     //valor unit sin iva sin descuento
                     BigDecimal subTotal
-                                = costVentaTipoCliente.divide(factorSacarSubtotal, 5, RoundingMode.FLOOR);
+                            = costVentaTipoCliente.divide(factorSacarSubtotal, 5, RoundingMode.FLOOR);
                     valor.setSubTotal(subTotal);
                     //valor unitario sin iva con descuento
                     BigDecimal subTotalDescuento
-                                = valorTotalIvaDesc.divide(factorSacarSubtotal, 5, RoundingMode.FLOOR);
+                            = valorTotalIvaDesc.divide(factorSacarSubtotal, 5, RoundingMode.FLOOR);
                     valor.setSubTotalDescuento(subTotalDescuento);
                     //valor del descuento
                     BigDecimal valorDescuento = valor.getSubTotal().subtract(valor.getSubTotalDescuento());
@@ -3305,6 +3436,78 @@ public class Facturar extends SelectorComposer<Component> {
 
     public void setValorIce(BigDecimal valorIce) {
         this.valorIce = valorIce;
+    }
+
+    public BigDecimal getIvaCotizacion5() {
+        return ivaCotizacion5;
+    }
+
+    public void setIvaCotizacion5(BigDecimal ivaCotizacion5) {
+        this.ivaCotizacion5 = ivaCotizacion5;
+    }
+
+    public BigDecimal getIvaCotizacion13() {
+        return ivaCotizacion13;
+    }
+
+    public void setIvaCotizacion13(BigDecimal ivaCotizacion13) {
+        this.ivaCotizacion13 = ivaCotizacion13;
+    }
+
+    public BigDecimal getIvaCotizacion14() {
+        return ivaCotizacion14;
+    }
+
+    public void setIvaCotizacion14(BigDecimal ivaCotizacion14) {
+        this.ivaCotizacion14 = ivaCotizacion14;
+    }
+
+    public BigDecimal getIvaCotizacion15() {
+        return ivaCotizacion15;
+    }
+
+    public void setIvaCotizacion15(BigDecimal ivaCotizacion15) {
+        this.ivaCotizacion15 = ivaCotizacion15;
+    }
+
+    public BigDecimal getSubTotalCotizacion5() {
+        return subTotalCotizacion5;
+    }
+
+    public void setSubTotalCotizacion5(BigDecimal subTotalCotizacion5) {
+        this.subTotalCotizacion5 = subTotalCotizacion5;
+    }
+
+    public BigDecimal getSubTotalCotizacion12() {
+        return subTotalCotizacion12;
+    }
+
+    public void setSubTotalCotizacion12(BigDecimal subTotalCotizacion12) {
+        this.subTotalCotizacion12 = subTotalCotizacion12;
+    }
+
+    public BigDecimal getSubTotalCotizacion13() {
+        return subTotalCotizacion13;
+    }
+
+    public void setSubTotalCotizacion13(BigDecimal subTotalCotizacion13) {
+        this.subTotalCotizacion13 = subTotalCotizacion13;
+    }
+
+    public BigDecimal getSubTotalCotizacion14() {
+        return subTotalCotizacion14;
+    }
+
+    public void setSubTotalCotizacion14(BigDecimal subTotalCotizacion14) {
+        this.subTotalCotizacion14 = subTotalCotizacion14;
+    }
+
+    public BigDecimal getSubTotalCotizacion15() {
+        return subTotalCotizacion15;
+    }
+
+    public void setSubTotalCotizacion15(BigDecimal subTotalCotizacion15) {
+        this.subTotalCotizacion15 = subTotalCotizacion15;
     }
 
 }

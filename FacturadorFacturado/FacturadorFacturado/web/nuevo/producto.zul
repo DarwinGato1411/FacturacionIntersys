@@ -9,29 +9,44 @@
     <div class="container_modal">
         <div class="header">
             <div class="wrapper_input_mod">
-                <span>Tipo: </span>
+                <!--<span>Tipo: </span>-->
                 <radiogroup  
+                    onCheck="@command('verificarTipoProducto')"
                     class="radio_group"
-                    selectedItem="@bind(vm.esProducto)" 
-                >                                            
+                    selectedItem="@bind(vm.esProducto)" >                                            
                     <radio label="PRODUCTO" value="P"/>
                     <space bar="false"  />   
                     <radio label="SERVICIO" value="S"/>                          
                 </radiogroup>
             </div>
             <div class="wrapper_input_mod">
-                <span>Declaración: </span>
+                <!--<span>Declaración: </span>-->
                 <radiogroup
                     class="radio_group" 
-                    onCheck="@command('colocarIva')" 
+                    onCheck="@command('verificarTipoProducto')"
+                   
                     selectedItem="@bind(vm.conIva)"  
-                >                   
-                    <radio label="Graba IVA" value="S"/>
-                    <space bar="false"  />   
-                    <radio label="Sin IVA" value="N"/>                          
+                >          
+                    <radio label="SIN IVA" value="N"/>   
+                    <space bar="false"  />        
+                    <radio label="GRABA IVA" value="S"/>
+                
+                                           
                 </radiogroup>
             </div>
-            <div class="wrapper_input_mod" style="position: relative">
+            <div class="wrapper_input_mod" visible="@bind(vm.muestraIncluye)">
+                <!--<span>Opción: </span>-->
+                <radiogroup
+                    class="radio_group" 
+                    onCheck="@command('muestraSubtotal')"
+                    selectedItem="@bind(vm.incluyeIva)"  
+                >                   
+                    <radio label="INCLUYE IVA" value="${true}"/>
+                    <space bar="false"  />   
+                    <radio label="NO INCLUYE IVA" value="${false}"/>                          
+                </radiogroup>
+            </div>
+            <div class="wrapper_input_mod" style=" margin-left:20px;position: relative">
                 <span>F. Registro: </span>
                 <datebox 
                     compact="true" 
@@ -47,10 +62,25 @@
                     style="position: absolute; left: 35%; top: 10px;color:  #1247b9;font-size: 12px"
                 />
             </div>
+            
+          
 
         </div>
+        <div class="header" visible="@bind(vm.grabaIva)">
+            <div class="wrapper_input_mod" >
+                <span>Porcentaje IVA </span>
+                <radiogroup  selectedItem="@bind(vm.producto.prodIva)" 
+                             model="@load(vm.listaIva)"  
+                             onCheck="@command('colocarIvaCampo')" >
+                    <template name="model">
+                        <radio label="@load(each ne null ? ''.concat(each).concat('%') : '')" style="padding-right: 9px;" value="@load(each)">                        
+                        </radio>
+                    </template>
+                </radiogroup>
 
-        <div class="body">
+            </div>
+        </div>
+        <div class="body" visible="@bind(!vm.esUnProdcuto)">
             <div class="container_row_input">
                 <div class="wrapper_input_mod">
                     <span>Código: </span>
@@ -63,19 +93,77 @@
                             class="input_text" />
                     </div>
                 </div>
-                <div class="wrapper_input_mod">
+                <div class="wrapper_input_mod" >
                     <span>Nombre: </span>
                     <div class="wrapper_input_text">
                         <div class="fa-solid fa-user icon"></div>
                         <textbox  
-                            maxlength="100" 
+                            maxlength="300" 
+                            value="@bind(vm.producto.prodNombre)"
+                            onChange="self.setValue(self.getValue().toUpperCase().trim());" 
+                            constraint="no empty: Campo requerido"
+                          
+                            class="input_text" />
+                    </div>
+                </div>
+                <div class="wrapper_input_mod" visible="@bind(vm.muestraSubtotal)">
+                    <span>Subtotal: </span>
+                    <div class="wrapper_input_text">
+                        <div class="fa-solid fa-dollar-sign icon"></div>
+                        <textbox    
+                            constraint="/^[0-9]{1,9}(?:[.][0-9]{1,5})?$/:Ingrese solo numeros"
+                            value="@bind(vm.prodPrecioSubtotal)"  
+                            onOK="@command('calcularPrecioFinalVenta')"
+                            class="input_text"  
+                        />
+                    </div>
+                </div>
+                <div class="wrapper_input_mod">
+                    <span>Precio final: </span>
+                    <div class="wrapper_input_text">
+                        <div class="fa-solid fa-dollar-sign icon"></div>
+                        <textbox    
+                            
+                            constraint="/^[0-9]{1,9}(?:[.][0-9]{1,5})?$/:Ingrese solo numeros"
+                            value="@bind(vm.producto.pordCostoVentaFinal)"  
+                            class="input_text"  
+                        />
+                    </div>
+                </div>
+                
+            </div>
+
+        </div>
+     
+        
+        
+        
+        <div class="body" visible="@bind(vm.esUnProdcuto)">
+            <div class="container_row_input">
+                <div class="wrapper_input_mod">
+                    <span>Código: </span>
+                    <div class="wrapper_input_text">
+                        <div class="fa-solid fa-barcode icon"></div>
+                        <textbox  
+                            maxlength="20"   
+                            onChange="self.setValue(self.getValue().toUpperCase().trim());" 
+                            value="@bind(vm.producto.prodCodigo)"  
+                            class="input_text" />
+                    </div>
+                </div>
+                <div class="wrapper_input_mod" >
+                    <span>Nombre: </span>
+                    <div class="wrapper_input_text">
+                        <div class="fa-solid fa-user icon"></div>
+                        <textbox  
+                            maxlength="300" 
                             value="@bind(vm.producto.prodNombre)"
                             onChange="self.setValue(self.getValue().toUpperCase().trim());" 
                             constraint="no empty: Campo requerido"
                             class="input_text" />
                     </div>
                 </div>
-                <div class="wrapper_input_mod">
+                <div class="wrapper_input_mod" >
                     <span>Costo / compra: </span>
                     <div class="wrapper_input_text">
                         <div class="fa-solid fa-sack-dollar icon"></div>
@@ -286,7 +374,7 @@
 
             </div>
         </div>
-        <div class="body">
+        <div class="body" visible="@bind(vm.esUnProdcuto)">
             <div class="container_row_input">
               
                 
