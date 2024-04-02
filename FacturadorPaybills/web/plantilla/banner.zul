@@ -7,7 +7,7 @@
         <div class="row" >
 
 
-            <div class="col-12 col-sm-12 col-md-7 col-lg-7" align="start">
+            <div class="col-12 col-sm-12 col-md-11 col-lg-11" align="start">
                 <div class="row">
                     <div  viewModel="@id('vm')" id="gridMenu" 
                          apply="com.ec.controlador.MenuOpciones" 
@@ -77,10 +77,20 @@
                                 <menuitem label="Catalogos" id="btnAdministarVenta" class="menu_child" />
                                 <menuitem label="Gestion facturas" id="btnGestionFactura" class="menu_child" />
                             </menubar> 
-
-
+                            <div apply="org.zkoss.bind.BindComposer" 
+                                 viewModel="@id('vm') @init('com.ec.controlador.MenuToolbar')">
+                                <toolbar id="tb" height="30px"  style="background:transparent;margin-left:10px" orient="horizontal"  >
+                                    <label style="    color: #342065; font-size: 15px;font-weight: bold;"  value="Usuario: " if="${not sessionScope.userCredential.anonymous}" class="labelNuevo" />
+                                    <label style="    color: #342065;font-size: 15px;font-weight: bold;"   value="${sessionScope.usuario.nombreUsuario} / T-A ${sessionScope.usuario.tipoambiente.codTipoambiente}" class="labelNuevo" if="${not sessionScope.userCredential.anonymous}" />
+                       
+                                    <toolbarbutton image="/iconos/page.png" label="+ Producto"  onClick="@command('nuevoProducto')" />
+                                    <toolbarbutton image="/iconos/user.png" label="+ Cliente" onClick="@command('nuevoCliente')" />
+                        
+                          
+                                </toolbar>
 
                     
+                            </div>
                         </div>
                                 
                     </div>
@@ -88,26 +98,7 @@
                 </div>
                      
             </div>
-            <div class="col-12 col-sm-12 col-md-4 col-lg-4 row " align="start" style="float: right; " >
-                <div apply="org.zkoss.bind.BindComposer" 
-                      viewModel="@id('vm') @init('com.ec.controlador.MenuToolbar')">
 
-                    <toolbar id="tb" height="30px"  style="background:transparent;" orient="horizontal" align="end" >
-                        <toolbarbutton image="/iconos/page.png" label="+ Producto"  onClick="@command('nuevoProducto')" />
-                        <toolbarbutton image="/iconos/user.png" label="+ Cliente" onClick="@command('nuevoCliente')" />
-                        
-                       
-            
-                            <label value="Usuario: " if="${not sessionScope.userCredential.anonymous}" class="labelNuevo" />
-                            <label value="${sessionScope.usuario.nombreUsuario} / T-A ${sessionScope.usuario.tipoambiente.codTipoambiente}" class="labelNuevo" if="${not sessionScope.userCredential.anonymous}" />
-                       
-
-                
-                          
-                    </toolbar>
-                </div>
-               
-            </div>
              <div class="col-12 col-sm-12 col-md-1 col-lg-1  " align="start" style="float: right; " >
                  <menubar id="menubarEmpresa" orient="horizontal"  autodrop="true"  class="wrapper_menu labelNuevo menubarEmpresa">   
                             <menu label="Empresa" id="menuInformacion" class="menu_child"  >
@@ -121,10 +112,10 @@
                         </menubar>
 <!--                            <a sclass="logout labelLogout" style="color:red" id="logout" if="${not sessionScope.userCredential.anonymous}" class="form-group" >  
                          
-                                <div class="fa-solid fa-arrow-right-from-bracket icon_exit" />
-                                <span>Salir</span>
-                            </a>-->
-              </div>    
+                    <div class="fa-solid fa-arrow-right-from-bracket icon_exit" />
+                    <span>Salir</span>
+                </a>-->
+            </div>    
         </div>
         
         

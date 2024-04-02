@@ -563,6 +563,7 @@
                                         <listcell zclass = "mycss-listcell">
                                             <textbox    constraint="/^[0-9]{1,9}(?:[.][0-9]{1,5})?$/:Ingrese solo numeros"                                            
                                                         onOK="@command('calcularValoresDesCantidad',valor=each)"
+                                                         onChange="@command('calcularValoresDesCantidad',valor=each)"
                                                         class="form-control form-control-sm"                                                                                                                            
                                                         ctrlKeys="^A" onCtrlKey="@command('cambioPrecio',valor=each)"
                                                         value="@bind(each.total)"  />

@@ -22,6 +22,10 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
+                    <file>${libs.ZK6.5.3CE.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
                     <file>${file.reference.cliente-ws-offline.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
@@ -543,10 +547,6 @@
                 </library>
                 <library dirs="200">
                     <file>${file.reference.validation-api-1.0.0.GA.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library dirs="200">
-                    <file>${libs.ZK6.5.3CE.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
