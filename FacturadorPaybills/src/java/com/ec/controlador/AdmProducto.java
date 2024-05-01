@@ -289,7 +289,7 @@ public class AdmProducto {
     public void inicializarKardex() {
         if (Messagebox.show("¿Seguro que desea inicializar el Kardex?", "Atención", Messagebox.YES | Messagebox.NO, Messagebox.INFORMATION) == Messagebox.YES) {
             Kardex kardex;
-            List<Producto> listaKardex = servicioProducto.FindALlProducto();
+            List<Producto> listaKardex = servicioProducto.FindALlProducto(amb);
             for (Producto producto : listaKardex) {
                 if (servicioKardex.FindALlKardexs(producto) == null) {
                     kardex = new Kardex();
@@ -582,7 +582,7 @@ public class AdmProducto {
     @Command
     public void exportListboxToExcelTodo() throws Exception {
         try {
-            List<Producto> listarTodo = servicioProducto.FindALlProducto();
+            List<Producto> listarTodo = servicioProducto.FindALlProducto(amb);
             File dosfile = new File(exportarExcelTodo(listarTodo));
             if (dosfile.exists()) {
                 FileInputStream inputStream = new FileInputStream(dosfile);

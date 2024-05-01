@@ -183,7 +183,7 @@ public class AdmProductoProveedor {
     private void consultarListaProductoProvee() {
         lstProductoProveedorCostos.clear();
         //refresca el listdo de productos que aun no se encuentran registrados para el proveedor
-        List<Producto> lstProducto = servicioProducto.FindALlProducto();
+        List<Producto> lstProducto = servicioProducto.FindALlProducto(amb);
         for (Producto producto : lstProducto) {
             if (servicioProductoProveedor.findByIdProductoIdProveedor(producto.getIdProducto(), proveedorSelected.getIdProveedor()) == 0) {
                 lstProductoProveedorCostos.add(new ProductoProveedorCosto(producto, BigDecimal.ZERO));

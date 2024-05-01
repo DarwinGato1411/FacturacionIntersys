@@ -134,7 +134,7 @@ public class NuevoProducto {
             accion = "create";
         }
         verificarTipoProducto();
-        muestraSubtotal();
+//        muestraSubtotal();
 //        listaIva.add(BigDecimal.valueOf(0));
         listaIva.add(BigDecimal.valueOf(5));
         listaIva.add(BigDecimal.valueOf(12));
@@ -159,13 +159,13 @@ public class NuevoProducto {
         colocarIva();
         if (esProducto.equals("P")) {
             esUnProdcuto = Boolean.TRUE;
-            calculopreciofinal();
+//            calculopreciofinal();
         } else {
             this.producto.setPordCostoCompra(BigDecimal.ONE);
             esUnProdcuto = Boolean.FALSE;
             //            this.producto.setPordCostoVentaFinal(BigDecimal.ONE);
             prodPrecioSubtotal = prodPrecioSubtotal == null ? BigDecimal.ZERO : prodPrecioSubtotal;
-            calcularPrecioFinalVenta();
+//            calcularPrecioFinalVenta();
         }
         if (!esUnProdcuto && conIva.equals("S")) {
             muestraIncluye = Boolean.TRUE;

@@ -80,15 +80,15 @@ public class ServicioProducto {
 
     }
 
-    public List<Producto> FindALlProducto() {
+    public List<Producto> FindALlProducto(Tipoambiente codTipoambiente) {
 
         List<Producto> listaProductos = new ArrayList<Producto>();
         try {
             //Connection connection = em.unwrap(Connection.class);
             em = HelperPersistencia.getEMF();
             em.getTransaction().begin();
-            Query query = em.createNamedQuery("Producto.findAll", Producto.class);
-//           query.setParameter("codigoUsuario", producto);
+            Query query = em.createQuery("SELECT p FROM Producto p where p.codTipoambiente=:codTipoambiente ORDER BY p.prodNombre ASC");
+           query.setParameter("codTipoambiente", codTipoambiente);
             listaProductos = (List<Producto>) query.getResultList();
             em.getTransaction().commit();
         } catch (Exception e) {

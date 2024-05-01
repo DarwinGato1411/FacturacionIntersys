@@ -5,7 +5,6 @@
 package com.ec.controlador;
 
 import com.ec.entidad.DetalleKardex;
-import com.ec.entidad.FacturasActorizadaSri;
 import com.ec.entidad.Kardex;
 import com.ec.entidad.Producto;
 import com.ec.entidad.Tipoambiente;
@@ -26,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -289,7 +287,7 @@ public class AdmProducto {
     public void inicializarKardex() {
         if (Messagebox.show("¿Seguro que desea inicializar el Kardex?", "Atención", Messagebox.YES | Messagebox.NO, Messagebox.INFORMATION) == Messagebox.YES) {
             Kardex kardex;
-            List<Producto> listaKardex = servicioProducto.FindALlProducto();
+            List<Producto> listaKardex = servicioProducto.FindALlProducto(amb);
             for (Producto producto : listaKardex) {
                 if (servicioKardex.FindALlKardexs(producto) == null) {
                     kardex = new Kardex();
@@ -582,7 +580,7 @@ public class AdmProducto {
     @Command
     public void exportListboxToExcelTodo() throws Exception {
         try {
-            List<Producto> listarTodo = servicioProducto.FindALlProducto();
+            List<Producto> listarTodo = servicioProducto.FindALlProducto(amb);
             File dosfile = new File(exportarExcelTodo(listarTodo));
             if (dosfile.exists()) {
                 FileInputStream inputStream = new FileInputStream(dosfile);

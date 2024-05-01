@@ -376,7 +376,7 @@ and cb.id_cabecera=$P{id_cabecera} limit 1]]>
 		</band>
 		<band height="292">
 			<rectangle radius="10">
-				<reportElement positionType="Float" x="428" y="5" width="127" height="61"/>
+				<reportElement positionType="Float" x="400" y="5" width="155" height="61"/>
 			</rectangle>
 			<textField pattern="###0.00;-###0.00" isBlankWhenNull="false">
 				<reportElement style="table_TD" positionType="Float" mode="Transparent" x="497" y="50" width="54" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
@@ -393,7 +393,7 @@ and cb.id_cabecera=$P{id_cabecera} limit 1]]>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{cab_total}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="table_TD" positionType="Float" mode="Transparent" x="428" y="50" width="69" height="13" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement style="table_TD" positionType="Float" mode="Transparent" x="416" y="50" width="81" height="13" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
 					<topPen lineWidth="0.0"/>
@@ -414,7 +414,7 @@ and cb.id_cabecera=$P{id_cabecera} limit 1]]>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{cab_sub_total_cero}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="table_TD" positionType="Float" mode="Transparent" x="428" y="11" width="69" height="13" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement style="table_TD" positionType="Float" mode="Transparent" x="416" y="11" width="81" height="13" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
 					<topPen lineWidth="0.0"/>
@@ -435,7 +435,7 @@ and cb.id_cabecera=$P{id_cabecera} limit 1]]>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{cab_iva}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="table_TD" positionType="Float" mode="Transparent" x="428" y="24" width="69" height="13" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement style="table_TD" positionType="Float" mode="Transparent" x="416" y="24" width="81" height="13" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
 					<topPen lineWidth="0.0"/>
@@ -446,7 +446,7 @@ and cb.id_cabecera=$P{id_cabecera} limit 1]]>
 				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single" markup="none">
 					<font fontName="SansSerif" size="9" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<text><![CDATA[Subtotal 12%]]></text>
+				<text><![CDATA[Base Grabada]]></text>
 			</staticText>
 			<textField pattern="###0.00;-###0.00">
 				<reportElement x="497" y="24" width="54" height="13"/>
@@ -456,7 +456,7 @@ and cb.id_cabecera=$P{id_cabecera} limit 1]]>
 				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{cab_sub_total}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement style="table_TD" positionType="Float" mode="Transparent" x="428" y="37" width="69" height="13" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
+				<reportElement style="table_TD" positionType="Float" mode="Transparent" x="416" y="37" width="81" height="13" isPrintWhenDetailOverflows="true" forecolor="#000000" backcolor="#FFFFFF"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineWidth="0.0"/>
 					<topPen lineWidth="0.0"/>
