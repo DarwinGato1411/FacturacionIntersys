@@ -227,7 +227,7 @@ public class AutorizarDocumentos {
     public String generaXMLFactura(Factura valor, Tipoambiente amb, String folderDestino, String nombreArchivoXML, Boolean autorizada, Date fechaAutorizacion) {
         try {
 
-            /*VERIFICAR AGREGAR IVA 5 13 14 15*/
+             /*VERIFICAR AGREGAR IVA 5 13 14 15*/
             String TARIFA0 = ("            <totalImpuesto>\n"
                     + "                <codigo>" + valor.getFacCodIva() + "</codigo>\n"
                     + "                <codigoPorcentaje>0</codigoPorcentaje>\n"
@@ -238,39 +238,38 @@ public class AutorizarDocumentos {
             String TARIFA12 = ("             <totalImpuesto>\n"
                     + "             <codigo>" + valor.getFacCodIva() + "</codigo>\n"
                     + "                 <codigoPorcentaje>2</codigoPorcentaje>\n"
-                    + "                 <baseImponible>" + valor.getFacTotalBaseGravaba() + "</baseImponible>\n"
+                    + "                 <baseImponible>" +  ArchivoUtils.redondearDecimales(valor.getFacTotalBaseGravaba(),2) + "</baseImponible>\n"
                     + "                 <tarifa>" + valor.getFacPorcentajeIva() + "</tarifa>\n"
                     + "                 <valor>" + ArchivoUtils.redondearDecimales(valor.getFacIva(), 2) + "</valor>\n"
                     + "              </totalImpuesto>\n");
             String TARIFA5 = ("             <totalImpuesto>\n"
                     + "             <codigo>" + valor.getFacCodIva() + "</codigo>\n"
                     + "                 <codigoPorcentaje>5</codigoPorcentaje>\n"
-                    + "                 <baseImponible>" + valor.getFacSubt5() + "</baseImponible>\n"
+                    + "                 <baseImponible>" + ArchivoUtils.redondearDecimales(valor.getFacSubt5(), 2) + "</baseImponible>\n"
                     + "                 <tarifa>5</tarifa>\n"
                     + "                 <valor>" + ArchivoUtils.redondearDecimales(valor.getFacIva5(), 2) + "</valor>\n"
                     + "              </totalImpuesto>\n");
             String TARIFA13 = ("             <totalImpuesto>\n"
                     + "             <codigo>" + valor.getFacCodIva() + "</codigo>\n"
                     + "                 <codigoPorcentaje>10</codigoPorcentaje>\n"
-                    + "                 <baseImponible>" + valor.getFacSubt13() + "</baseImponible>\n"
+                    + "                 <baseImponible>" + ArchivoUtils.redondearDecimales(valor.getFacSubt13() , 2)+ "</baseImponible>\n"
                     + "                 <tarifa>13</tarifa>\n"
                     + "                 <valor>" + ArchivoUtils.redondearDecimales(valor.getFacIva13(), 2) + "</valor>\n"
                     + "              </totalImpuesto>\n");
             String TARIFA14 = ("             <totalImpuesto>\n"
                     + "             <codigo>" + valor.getFacCodIva() + "</codigo>\n"
                     + "                 <codigoPorcentaje>3</codigoPorcentaje>\n"
-                    + "                 <baseImponible>" + valor.getFacSubt14() + "</baseImponible>\n"
+                    + "                 <baseImponible>" + ArchivoUtils.redondearDecimales( valor.getFacSubt14(),2) + "</baseImponible>\n"
                     + "                 <tarifa>14</tarifa>\n"
                     + "                 <valor>" + ArchivoUtils.redondearDecimales(valor.getFacIva14(), 2) + "</valor>\n"
                     + "              </totalImpuesto>\n");
             String TARIFA15 = ("             <totalImpuesto>\n"
                     + "             <codigo>" + valor.getFacCodIva() + "</codigo>\n"
                     + "                 <codigoPorcentaje>4</codigoPorcentaje>\n"
-                    + "                 <baseImponible>" + valor.getFacSubt15() + "</baseImponible>\n"
+                    + "                 <baseImponible>" + ArchivoUtils.redondearDecimales(valor.getFacSubt15(), 2) + "</baseImponible>\n"
                     + "                 <tarifa>15</tarifa>\n"
                     + "                 <valor>" + ArchivoUtils.redondearDecimales(valor.getFacIva15(), 2) + "</valor>\n"
                     + "              </totalImpuesto>\n");
-
             FileOutputStream out = null;
             SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
 
