@@ -192,7 +192,7 @@
                             <span>Clave firma: </span>
                             <div class="wrapper_input_text">
                                 <div class="fa-solid fa-key icon"></div>
-                                <textbox 
+                                <textbox onChange="@command('validarFirma')"
                                     type="password"
                                     value="@bind(vm.tipoambiente.amClaveAccesoSri)" 
                                     placeholder="Clave SRI"

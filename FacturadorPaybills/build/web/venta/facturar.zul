@@ -172,7 +172,7 @@
                                         class="input" 
                                     />
                                 </div>
-                                <div class="wrapper_input">
+                                <!--                                <div class="wrapper_input">
                                     <span>Base 12%:</span>
                                     <decimalbox  
                                         format="###.##"   
@@ -181,7 +181,7 @@
                                         onChange="self.setValue(self.getValue().toUpperCase().trim());" 
                                         class="input" 
                                     />
-                                </div>
+                                </div>-->
                                
                                 <!--                                    <div class="wrapper_input">
                                     <span>Base 13%:</span>
@@ -213,7 +213,19 @@
                                         class="input" 
                                     />
                                 </div>
-                                
+                                <div class="wrapper_buttons">
+
+                                    <button 
+                                        autodisable="self"   
+                                        width="100%"
+                                        class="fa-solid fa-floppy-disk btn_fact btn_primary"                  
+                                        onClick="@command('Guardar',valor='SG',envia='S')"
+                                        tooltiptext="Facturar y Enviar al SRI"
+                                        label="Facturar y enviar al SRI"
+                                        style="font-size:12px;width:100%"
+                                    />
+                                </div>
+
                                 
                             </div>
                             <div class="wrapper_data">
@@ -237,7 +249,7 @@
                                         class="input" 
                                     />
                                 </div>
-                                <div class="wrapper_input">
+                                <!--                                <div class="wrapper_input">
                                     <span>IVA 12%:</span>
                                     <decimalbox  
                                         format="###.##"  
@@ -245,7 +257,7 @@
                                         readonly="true" 
                                         class="input" 
                                     />
-                                </div>
+                                </div>-->
                                 <!--                                    <div class="wrapper_input">
                                     <span>IVA 13%:</span>
                                     <decimalbox  
@@ -274,6 +286,22 @@
                                     />
                                 </div>
                                 
+                                <div class="wrapper_buttons">
+                  
+                                    <button 
+                                        autodisable="self"   
+                                        width="100%"
+                                        class="fa-solid fa-floppy-disk btn_fact btn_primary"                  
+                                        onClick="@command('Guardar',valor='SG',envia='N')"
+                                        tooltiptext="Facturar"
+                                        label="Facturar"
+                                        style="font-size:12px;width:100%"
+                                    />
+
+                                    
+
+                                
+                                </div>
 
                             </div>
                             <div class="wrapper_data">
@@ -311,10 +339,10 @@
                                         outline: none;
                                         font-size: 12px;
                                         color: #333;"
-                                                  format="###.##"   
-                                                  readonly="true" 
-                                                  class="input"
-                                                  value="@bind(vm.cambio)" 
+                                                 format="###.##"   
+                                                 readonly="true" 
+                                                 class="input"
+                                                 value="@bind(vm.cambio)" 
                                     />
                                 </div>
                                
@@ -333,33 +361,7 @@
                                         
                                     />
                                 </div> 
-                                <div class="wrapper_buttons">
-                                
-                                
-                                    <!-- <button 
-                                        class="btn_fact btn_primary"
-                                        autodisable="self"                     
-                                        onClick="@command('verNotasEntrega')"
-                                        tooltiptext="Cargar notas de entrega"
-                                    >
-                                        Cargar notas
-                                    </button> -->
-                                
-                              
-                                    <button 
-                                        autodisable="self"   
-                                        width="100%"
-                                        class="fa-solid fa-floppy-disk btn_fact btn_primary"                  
-                                        onClick="@command('Guardar',valor='SG')"
-                                        tooltiptext="Facturar"
-                                        label="Facturar"
-                                        style="font-size:12px;width:100%"
-                                    />
-
-                                    
-
-                                
-                                </div>
+                           
                             </div>
                                 
                                 

@@ -20,14 +20,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
-import java.security.cert.X509Certificate;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -38,8 +32,6 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
 import javax.persistence.EntityManager;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -67,20 +59,6 @@ import org.zkoss.zk.ui.Executions;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import okhttp3.Headers;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.tls.Certificates;
-import okhttp3.tls.HandshakeCertificates;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -93,7 +71,104 @@ import org.w3c.dom.DOMException;
 
 import org.xml.sax.SAXException;
 
+import java.net.URL;
+import java.net.*;
+import java.nio.charset.Charset;
+import java.security.cert.X509Certificate;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
+import javax.xml.xpath.*;
+import org.apache.http.*;
+import org.apache.http.client.*;
+import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.*;
+import org.apache.http.impl.client.*;
+import org.apache.http.util.*;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.tls.Certificates;
+import okhttp3.tls.HandshakeCertificates;
+
 public class ArchivoUtils {
+
+    static final String certGestDoc = "-----BEGIN CERTIFICATE-----\n"
+            + "MIIGQDCCBSigAwIBAgIQVki3e1buTq5ZzIKsz3j3oDANBgkqhkiG9w0BAQsFADBM\n"
+            + "MQswCQYDVQQGEwJMVjENMAsGA1UEBxMEUmlnYTERMA8GA1UEChMIR29HZXRTU0wx\n"
+            + "GzAZBgNVBAMTEkdvR2V0U1NMIFJTQSBEViBDQTAeFw0yNTA1MjIwMDAwMDBaFw0y\n"
+            + "NjA1MDMyMzU5NTlaMCUxIzAhBgNVBAMMGiouZ2VzdGlvbmRvY3VtZW50YWwuZ29i\n"
+            + "LmVjMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0QxPvmhtStV0PxwB\n"
+            + "xRJFxnE6bv3XZm7b9XfOHyI+6CZwtH69YA1ajj4xuex7I2mArRvilA52EcVj9Jm8\n"
+            + "Y9FE+F56n9b28HYT8vh0MldpXJF/PciLRcwDJyinRX5qrLz088LSVhY4Btkcfo+Y\n"
+            + "rlveIy0Kp2PP8JIwVgTNQTezHhHjVAiKfu/HDacd/6j9PWUFfVQ3vqcudUgtnqBM\n"
+            + "TuEagXYl9hp5MK6VaSdkZFBqZSrhtwYGIQuKUJIZV+AjC+6I7iolQ+GfJcXFy74S\n"
+            + "/GXllkLIl/wsiTR2fGQCGdscmpqUL8gHQ4SShSYPVj0Fz0BgCM2dkEicWiB50+rU\n"
+            + "tzpBJQIDAQABo4IDQzCCAz8wHwYDVR0jBBgwFoAU+ftQxItnu2dk/oMhpqnOP1WE\n"
+            + "k5kwHQYDVR0OBBYEFEufHEbmui4qMHEaoRIfs+Sz7ZkfMA4GA1UdDwEB/wQEAwIF\n"
+            + "oDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjBL\n"
+            + "BgNVHSAERDBCMDYGCysGAQQBsjEBAgJAMCcwJQYIKwYBBQUHAgEWGWh0dHBzOi8v\n"
+            + "Y3BzLnVzZXJ0cnVzdC5jb20wCAYGZ4EMAQIBMD0GA1UdHwQ2MDQwMqAwoC6GLGh0\n"
+            + "dHA6Ly9jcmwudXNlcnRydXN0LmNvbS9Hb0dldFNTTFJTQURWQ0EuY3JsMG8GCCsG\n"
+            + "AQUFBwEBBGMwYTA4BggrBgEFBQcwAoYsaHR0cDovL2NydC51c2VydHJ1c3QuY29t\n"
+            + "L0dvR2V0U1NMUlNBRFZDQS5jcnQwJQYIKwYBBQUHMAGGGWh0dHA6Ly9vY3NwLnVz\n"
+            + "ZXJ0cnVzdC5jb20wPwYDVR0RBDgwNoIaKi5nZXN0aW9uZG9jdW1lbnRhbC5nb2Iu\n"
+            + "ZWOCGGdlc3Rpb25kb2N1bWVudGFsLmdvYi5lYzCCAYAGCisGAQQB1nkCBAIEggFw\n"
+            + "BIIBbAFqAHcAlpdkv1VYl633Q4doNwhCd+nwOtX2pPM2bkakPw/KqcYAAAGW+KhD\n"
+            + "uAAABAMASDBGAiEAobFYf4s7QRgSo8tKMcecW+XTc7V+0N5nysqOQCDktSECIQDC\n"
+            + "/JatbrksmjOfsZS89G7XB0JWRPzQeNzB4l7TXfMmtAB2ABmG1Mcoqm/+ugNveCpN\n"
+            + "AZGqzi1yMQ+uzl1wQS0lTMfUAAABlvioQ5gAAAQDAEcwRQIgK8oU3AjmkXbs19T2\n"
+            + "KCyxEGDlfI4tYR0lOqUDR82oWtICIQDOnISqu4ZUFGHKFHq2Tpdk/x9+YrKLiIR3\n"
+            + "44P163UqtAB3AA5XlLzzrqk+MxssmQez95Dfm8I9cTIl3SGpJaxhxU4hAAABlvio\n"
+            + "Q88AAAQDAEgwRgIhAOpQBJHxU5Ekb8XHVjDtGcp4SfZKcUFFFRVofUH0mUcZAiEA\n"
+            + "/3UxFyERJCjl1CFYW9R8kEBmwmXTKFoflYSiCMdciDYwDQYJKoZIhvcNAQELBQAD\n"
+            + "ggEBAFpVCid5EJpjt+SFUik6I433Iy9IP698w1IDOChWZKDzKsnIBzlo9Njl66yT\n"
+            + "Mzw6Y4BQU56UC9KB7p6gh88Sgb6SdBgZ8uSXcIHBVzgDKJ7jHVamPEcWrWGOIHDe\n"
+            + "u/T12Qu47dq98dcOrsEu89GrJA9RzYtuEqn3N6w0KSOhqX42Cjf8AeDmFmLFYIQL\n"
+            + "JEjM//VzYUnclOTbKqBnj3xl9iH2e/U/uimx0Up3qiVbiGLS57OYinI5YQ12G9kI\n"
+            + "mLqhtFcX7roWCtqzvr0jwCYjg5IfYouQwlyRlz0NclqO5Yxu9MoQIa7tZq1lucKp\n"
+            + "ujSKzfd5RrKuTce856Lcs8FcB0E=\n"
+            + "-----END CERTIFICATE-----";
+
+    static final String certSRI = "-----BEGIN CERTIFICATE-----\n"
+            + "MIIG7DCCBdSgAwIBAgIQDq1uovBFe87I1sEjFGd/rTANBgkqhkiG9w0BAQsFADBZ\n"
+            + "MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMTMwMQYDVQQDEypE\n"
+            + "aWdpQ2VydCBHbG9iYWwgRzIgVExTIFJTQSBTSEEyNTYgMjAyMCBDQTEwHhcNMjQx\n"
+            + "MjIzMDAwMDAwWhcNMjYwMTIzMjM1OTU5WjB0MQswCQYDVQQGEwJFQzEOMAwGA1UE\n"
+            + "CBMFQXp1YXkxDzANBgNVBAcTBkN1ZW5jYTEkMCIGA1UEChMbU0VSVklDSU8gREUg\n"
+            + "UkVOVEFTIElOVEVSTkFTMR4wHAYDVQQDExVzcmllbmxpbmVhLnNyaS5nb2IuZWMw\n"
+            + "ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCx3qNrIfml3GXdXYcWu1Th\n"
+            + "YPSEjL24JORo3hgjkaYRBmFKtBeWtmNNnE8Mp3J+aIF2cnMx2fRwWUXoryG2X/Be\n"
+            + "vZYxEAZfM6OXqo61HA+zqujdlLoiMtNPbdKMQoulHNyMFXDF8KvcksWQUsNro6aZ\n"
+            + "SchuPDtzVFZWskXVXR6KAds/aBJWtSYmGWPhkNN9IdUX297vIPYozy6p1WwcXoMZ\n"
+            + "tRZgjh5PHvjZA6tiHZFfjddjjIiyf/P3cAmjSvY/ARjTVJi6FK0QvlbKIWv84p2z\n"
+            + "mDF9QojghaR1svRe196BksY5Oaxj48HRn2YfyCM2YA6xZV4RrqsGh1a1RtQ9yv3t\n"
+            + "AgMBAAGjggOTMIIDjzAfBgNVHSMEGDAWgBR0hYDAZsffN97PvSk3qgMdvu3NFzAd\n"
+            + "BgNVHQ4EFgQUiJfMAB34G5Xj24SHgTzknw2LCIUwIAYDVR0RBBkwF4IVc3JpZW5s\n"
+            + "aW5lYS5zcmkuZ29iLmVjMD4GA1UdIAQ3MDUwMwYGZ4EMAQICMCkwJwYIKwYBBQUH\n"
+            + "AgEWG2h0dHA6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAOBgNVHQ8BAf8EBAMCBaAw\n"
+            + "HQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMIGfBgNVHR8EgZcwgZQwSKBG\n"
+            + "oESGQmh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEdsb2JhbEcyVExT\n"
+            + "UlNBU0hBMjU2MjAyMENBMS0xLmNybDBIoEagRIZCaHR0cDovL2NybDQuZGlnaWNl\n"
+            + "cnQuY29tL0RpZ2lDZXJ0R2xvYmFsRzJUTFNSU0FTSEEyNTYyMDIwQ0ExLTEuY3Js\n"
+            + "MIGHBggrBgEFBQcBAQR7MHkwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2lj\n"
+            + "ZXJ0LmNvbTBRBggrBgEFBQcwAoZFaHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29t\n"
+            + "L0RpZ2lDZXJ0R2xvYmFsRzJUTFNSU0FTSEEyNTYyMDIwQ0ExLTEuY3J0MAwGA1Ud\n"
+            + "EwEB/wQCMAAwggGABgorBgEEAdZ5AgQCBIIBcASCAWwBagB3AJaXZL9VWJet90OH\n"
+            + "aDcIQnfp8DrV9qTzNm5GpD8PyqnGAAABk/D5VK4AAAQDAEgwRgIhAMxhciSMAh/K\n"
+            + "naI237TBD7qcK2sNR+Yrxp33dqKSLILoAiEA2UssmF0Ht6eUovbbIWLN1aQKtd8H\n"
+            + "r1vBX6UWUoRGMpIAdgBkEcRspBLsp4kcogIuALyrTygH1B41J6vq/tUDyX3N8AAA\n"
+            + "AZPw+VSNAAAEAwBHMEUCIQD0TLLzkg10q58G7qdlf5ug2OBvkpUsxznFVjb5S0+i\n"
+            + "HwIgfRb8cLoqf8pQycew38pE9lO5vXi77L7U6OqyO4FwceQAdwBJnJtp3h187Pw2\n"
+            + "3s2HZKa4W68Kh4AZ0VVS++nrKd34wwAAAZPw+VSgAAAEAwBIMEYCIQCBxShySgnw\n"
+            + "IokvNdWDrWLhsmwv/7YtXgwB5YeEBKTA/QIhAKFXnwA41iIBExm0xID3oMsHfLx8\n"
+            + "NmZtYrog0p+NkT42MA0GCSqGSIb3DQEBCwUAA4IBAQB+Lzwu+Coogn4fzmMPTSER\n"
+            + "V1nr/lIOqJZnGbLeqVD+5o19aYexqDquVjdMIojHwrAy7Xx7Jr0wk6R5fGO9FF2i\n"
+            + "tGnwOPufIwXeQa2c2mYFPvly4boC8Gga3unKVdQ+STxZe4Dueel0QU23slBA17nb\n"
+            + "ymPhkwZ7RUTmqbRbNur054EidD9oRNLUrj+ED262sUBQsz1OrYopRqYHaFmQzCC+\n"
+            + "5iLU7Zfcvzaq+SEaxtGXD2oIuR6wTSr8Em1ad5hli7CtcpPNP5yn+jFhE8xT7t54\n"
+            + "N6Cd6ThtNlsLoQfEGP0rUXgllxVh8z/0twIEdZfTfNnrc7eZdNMyt4zdS81EZYaK\n"
+            + "-----END CERTIFICATE-----";
 
     public static String archivoToString(String rutaArchivo) {
         /*  70 */ StringBuffer buffer = new StringBuffer();
@@ -458,6 +533,70 @@ public class ArchivoUtils {
 
     }
 
+    public static void reporteGeneralPdfMailWS(String pathPDF, Integer numeroFactura, String tipo, Tipoambiente amb) throws JRException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, NamingException {
+        EntityManager emf = HelperPersistencia.getEMF();
+        Connection con = null;
+        try {
+
+            File currentDirFile = new File(".");
+            String helper = currentDirFile.getAbsolutePath();
+            String currentDir = helper.substring(0, helper.length() - currentDirFile.getCanonicalPath().length());
+            System.out.println("helper " + helper);
+            System.out.println("currentDir " + currentDir);
+
+            String sutaPlit[] = helper.split("domain1");
+            System.out.println("sutaPlit[0] " + sutaPlit[0]);
+
+//            String reportFile = "/home/Deckxel/payara41/glassfish/domains/domain1/applications/posibilitum/reportes";
+            String reportFile = sutaPlit[0] + File.separator + "domain1/applications/defact/reportes";
+//            String reportFile = Executions.getCurrent().getDesktop().getWebApp()
+//                    .getRealPath("/reportes");
+            System.out.println("reportFile " + reportFile);
+            String reportPath = "";
+            emf.getTransaction().begin();
+            con = emf.unwrap(Connection.class);
+            if (tipo.contains("FACT")) {
+                reportPath = reportFile + File.separator + "factura.jasper";
+            } else if (tipo.contains("NCRE")) {
+                reportPath = reportFile + File.separator + "notacr.jasper";
+            } else if (tipo.contains("RET")) {
+                reportPath = reportFile + File.separator + "retencion.jasper";
+            } else if (tipo.contains("GUIA")) {
+                reportPath = reportFile + File.separator + "guia.jasper";
+            }
+
+            Map<String, Object> parametros = new HashMap<String, Object>();
+
+            //  parametros.put("codUsuario", String.valueOf(credentialLog.getAdUsuario().getCodigoUsuario()));
+            parametros.put("numfactura", numeroFactura);
+            parametros.put("codTipoAmbiente", amb.getCodTipoambiente());
+
+            if (con != null) {
+                System.out.println("Conexión Realizada Correctamenteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+            }
+            FileInputStream is = null;
+            is = new FileInputStream(reportPath);
+
+//                byte[] buf = JasperRunManager.runReportToPdf(is, parametros, con);
+            JasperPrint print = JasperFillManager.fillReport(reportPath, parametros, con);
+            JasperExportManager.exportReportToPdfFile(print, pathPDF);
+        } catch (FileNotFoundException e) {
+            System.out.println("Error en generar el reporte file " + e.getMessage());
+        } catch (JRException e) {
+            System.out.println("Error en generar el reporte JRE  " + e.getMessage());
+        } finally {
+            if (con != null) {
+                con.close();
+            }
+            if (emf != null) {
+                emf.close();
+                System.out.println("cerro entity");
+            }
+        }
+
+    }
+
+
     /*AGREGA LO DESEADO AL FINAL DEL TAG REALIZA UN INCREMENT MAS NO UN ADD EN UNA POSICION ESPECIFICA*/
     public static void modificarXMLAutorizado(String URI, String estado, String autorizacion, Date fecha, String URISalida) {
         try {
@@ -625,56 +764,114 @@ public class ArchivoUtils {
         return BigDecimal.valueOf(resultado);
     }
 
-//    public static AduanaJson obtenerdatoAduana(String cedulaParam) throws URISyntaxException, IOException {
-//        AduanaJson respuesta = new AduanaJson();
-//        String stubsApiBaseUri = "https://srienlinea.sri.gob.ec/movil-servicios/api/v1.0/deudas/porIdentificacion/" + cedulaParam;
-//
-//        HttpClient client = HttpClients.createDefault();
-//
-//        URIBuilder builder = new URIBuilder(stubsApiBaseUri);
-//
-//        String listStubsUri = builder.build().toString();
-//        HttpGet getStubMethod = new HttpGet(listStubsUri);
-//        HttpResponse getStubResponse = client.execute(getStubMethod);
-//        int getStubStatusCode = getStubResponse.getStatusLine()
-//                .getStatusCode();
-//        if (getStubStatusCode < 200 || getStubStatusCode >= 300) {
-//            // Handle non-2xx status code
-//            respuesta.setCedula("");
-//            respuesta.setNombre("");
-//            respuesta.setMensaje("");
-//        }
-//        String contenido = EntityUtils
-//                .toString(getStubResponse.getEntity());
-//
-//        System.out.println(contenido);
-//
-//        //JSONObject outlineArray = new JSONObject(contenido);
-//        try {
-//            if (!contenido.equals("")) {
-//                JSONObject appObject = new JSONObject(contenido);
-//
-//                JSONObject appObjectInf = appObject.getJSONObject("contribuyente");
-//                String nombre = appObjectInf.getString("nombreComercial");
-//                String mensaje = appObjectInf.getString("clase");
-//                String cedula = appObjectInf.getString("identificacion");
-//
-//                respuesta.setCedula(cedula);
-//                respuesta.setNombre(nombre);
-//                respuesta.setMensaje(mensaje);
-//            } else {
-//                respuesta.setCedula("");
-//                respuesta.setNombre("");
-//                respuesta.setMensaje("");
-//            }
-//        } catch (JSONException e) {
-//            respuesta.setCedula("");
-//            respuesta.setNombre("");
-//            respuesta.setMensaje("");
-//        }
-//
-//        return respuesta;
-//    }
+    public static AduanaJson obtenerdatoAduana(String cedulaParam) {
+        AduanaJson respuesta = new AduanaJson();
+        try {
+
+            String stubsApiBaseUri = "https://srienlinea.sri.gob.ec/movil-servicios/api/v1.0/deudas/porIdentificacion/" + cedulaParam;
+
+            HttpClient client = HttpClients.createDefault();
+
+            URIBuilder builder = new URIBuilder(stubsApiBaseUri);
+
+            String listStubsUri = builder.build().toString();
+            HttpGet getStubMethod = new HttpGet(listStubsUri);
+            HttpResponse getStubResponse = client.execute(getStubMethod);
+            int getStubStatusCode = getStubResponse.getStatusLine()
+                    .getStatusCode();
+            if (getStubStatusCode < 200 || getStubStatusCode >= 300) {
+                // Handle non-2xx status code
+                respuesta.setCedula("");
+                respuesta.setNombre("");
+                respuesta.setMensaje("");
+            }
+            String contenido = EntityUtils
+                    .toString(getStubResponse.getEntity());
+
+            System.out.println(contenido);
+
+            //JSONObject outlineArray = new JSONObject(contenido);
+            try {
+                if (!contenido.equals("")) {
+                    JSONObject appObject = new JSONObject(contenido);
+
+                    JSONObject appObjectInf = appObject.getJSONObject("contribuyente");
+                    String nombre = appObjectInf.getString("nombreComercial");
+                    String mensaje = appObjectInf.getString("clase");
+                    String cedula = appObjectInf.getString("identificacion");
+
+                    respuesta.setCedula(cedula);
+                    respuesta.setNombre(nombre);
+                    respuesta.setMensaje(mensaje);
+                } else {
+                    respuesta.setCedula("");
+                    respuesta.setNombre("");
+                    respuesta.setMensaje("");
+                }
+            } catch (JSONException e) {
+                respuesta.setCedula("");
+                respuesta.setNombre("");
+                respuesta.setMensaje("");
+            }
+
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(ArchivoUtils.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ArchivoUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return respuesta;
+    }
+
+    public static AduanaJson obteberDatos(String cedulaParam) throws URISyntaxException, IOException, XPathExpressionException, JSONException {
+        AduanaJson respuesta = new AduanaJson();
+        String stubsApiBaseUri = "https://srienlinea.sri.gob.ec/movil-servicios/api/v1.0/deudas/porIdentificacion/" + cedulaParam;
+
+        HttpClient client = HttpClients.createDefault();
+
+        URIBuilder builder = new URIBuilder(stubsApiBaseUri);
+
+        String listStubsUri = builder.build().toString();
+        HttpGet getStubMethod = new HttpGet(listStubsUri);
+        HttpResponse getStubResponse = client.execute(getStubMethod);
+        int getStubStatusCode = getStubResponse.getStatusLine()
+                .getStatusCode();
+        if (getStubStatusCode < 200 || getStubStatusCode >= 300) {
+            // Handle non-2xx status code
+            respuesta.setCedula("");
+            respuesta.setNombre("");
+            respuesta.setMensaje("");
+        }
+        String contenido = EntityUtils
+                .toString(getStubResponse.getEntity());
+
+        System.out.println(contenido);
+
+        //JSONObject outlineArray = new JSONObject(contenido);
+        try {
+            if (!contenido.equals("")) {
+                JSONObject appObject = new JSONObject(contenido);
+
+                JSONObject appObjectInf = appObject.getJSONObject("contribuyente");
+                String nombre = appObjectInf.getString("nombreComercial");
+                String mensaje = appObjectInf.getString("clase");
+                String cedula = appObjectInf.getString("identificacion");
+
+                respuesta.setCedula(cedula);
+                respuesta.setNombre(nombre);
+                respuesta.setMensaje(mensaje);
+            } else {
+                respuesta.setCedula("");
+                respuesta.setNombre("");
+                respuesta.setMensaje("");
+            }
+        } catch (JSONException e) {
+            respuesta.setCedula("");
+            respuesta.setNombre("");
+            respuesta.setMensaje("");
+        }
+
+        return respuesta;
+    }
 
     public static byte[] Imagen_A_Bytes(String pathImagen) throws FileNotFoundException {
         String reportPath = "";
@@ -700,89 +897,6 @@ public class ArchivoUtils {
         return bytes;
     }
 
-    public static void reporteGeneralPdfMailWS(String pathPDF, Integer numeroFactura, String tipo, Tipoambiente amb) throws JRException, IOException, ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException, NamingException {
-        EntityManager emf = HelperPersistencia.getEMF();
-        Connection con = null;
-        try {
-
-            File currentDirFile = new File(".");
-            String helper = currentDirFile.getAbsolutePath();
-            String currentDir = helper.substring(0, helper.length() - currentDirFile.getCanonicalPath().length());
-            System.out.println("helper " + helper);
-            System.out.println("currentDir " + currentDir);
-
-            String sutaPlit[] = helper.split("domain1");
-            System.out.println("sutaPlit[0] " + sutaPlit[0]);
-
-//            String reportFile = "/home/Deckxel/payara41/glassfish/domains/domain1/applications/posibilitum/reportes";
-            String reportFile = sutaPlit[0] + File.separator + "domain1/applications/defact/reportes";
-//            String reportFile = Executions.getCurrent().getDesktop().getWebApp()
-//                    .getRealPath("/reportes");
-            System.out.println("reportFile " + reportFile);
-            String reportPath = "";
-            emf.getTransaction().begin();
-            con = emf.unwrap(Connection.class);
-            if (tipo.contains("FACT")) {
-                reportPath = reportFile + File.separator + "factura.jasper";
-            } else if (tipo.contains("NCRE")) {
-                reportPath = reportFile + File.separator + "notacr.jasper";
-            } else if (tipo.contains("RET")) {
-                reportPath = reportFile + File.separator + "retencion.jasper";
-            } else if (tipo.contains("GUIA")) {
-                reportPath = reportFile + File.separator + "guia.jasper";
-            }
-
-            Map<String, Object> parametros = new HashMap<String, Object>();
-
-            //  parametros.put("codUsuario", String.valueOf(credentialLog.getAdUsuario().getCodigoUsuario()));
-            parametros.put("numfactura", numeroFactura);
-            parametros.put("codTipoAmbiente", amb.getCodTipoambiente());
-
-            if (con != null) {
-                System.out.println("Conexión Realizada Correctamenteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-            }
-            FileInputStream is = null;
-            is = new FileInputStream(reportPath);
-
-//                byte[] buf = JasperRunManager.runReportToPdf(is, parametros, con);
-            JasperPrint print = JasperFillManager.fillReport(reportPath, parametros, con);
-            JasperExportManager.exportReportToPdfFile(print, pathPDF);
-        } catch (FileNotFoundException e) {
-            System.out.println("Error en generar el reporte file " + e.getMessage());
-        } catch (JRException e) {
-            System.out.println("Error en generar el reporte JRE  " + e.getMessage());
-        } finally {
-            if (con != null) {
-                con.close();
-            }
-            if (emf != null) {
-                emf.close();
-                System.out.println("cerro entity");
-            }
-        }
-
-    }
-
-    public static String obtenerPorRuc(String cedula) {
-        if (cedula.length() == 10) {
-            cedula = cedula + "001";
-        }
-
-        try {
-            JSONObject json = readJsonFromUrl("https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/Persona/obtenerPersonaDesdeRucPorIdentificacion?numeroRuc=" + cedula);
-            System.out.println(json.toString());
-            System.out.println(json.get("nombreCompleto"));
-            return json.get("nombreCompleto").toString();
-        } catch (IOException ex) {
-//                Logger.getLogger(Archi.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (JSONException ex) {
-//                Logger.getLogger(Verificador.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return "";
-
-    }
-
     public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
         InputStream is = new URL(url).openStream();
         try {
@@ -802,6 +916,59 @@ public class ArchivoUtils {
             sb.append((char) cp);
         }
         return sb.toString();
+    }
+
+    public static String obtenerPorRuc(String cedula) {
+        if (cedula.length() == 10) {
+            cedula = cedula + "001";
+        }
+
+        String contenido = "";
+        String direccion = "";
+        System.out.println("gestion doc");
+
+        X509TrustManager trustManager;
+        SSLSocketFactory sslSocketFactory;
+        try {
+            HandshakeCertificates certificates = new HandshakeCertificates.Builder()
+                    .addTrustedCertificate(letsEncryptCertificateAuthoritySRI)
+                    .addTrustedCertificate(entrustRootCertificateAuthoritySRI)
+                    .addTrustedCertificate(comodoRsaCertificationAuthoritySRI)
+                    // Uncomment if standard certificates are also required.
+                    //.addPlatformTrustedCertificates()
+                    .build();
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .sslSocketFactory(certificates.sslSocketFactory(), certificates.trustManager())
+                    .build();
+            Request request = new Request.Builder()
+                    .url("https://srienlinea.sri.gob.ec/sri-catastro-sujeto-servicio-internet/rest/Persona/obtenerPersonaDesdeRucPorIdentificacion?numeroRuc=" + cedula)
+                    .build();
+            System.out.println("EEEE");
+
+            try {
+                Response response = client.newCall(request).execute();
+                if (!response.isSuccessful()) {
+                    Headers responseHeaders = response.headers();
+                    for (int i = 0; i < responseHeaders.size(); i++) {
+                        System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
+                    }
+
+                    throw new IOException("Unexpected code " + response);
+                }
+
+                String contenidoObt = response.body().string();
+                JSONObject jsonObject = new JSONObject(contenidoObt);
+                return jsonObject.get("nombreCompleto").toString();
+            } catch (IOException e) {
+                System.out.println("ERROR IOException " + e.getMessage());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+//           
+
+        return "";
+
     }
 
     public static InfoPersona obtenerPorCedula(String cedula) {
@@ -868,190 +1035,16 @@ public class ArchivoUtils {
         return new InfoPersona(contenido, direccion);
     }
 
-    public static String token(String cedula) {
-        String contenido = "";
-        String direccion = "";
-        System.out.println("gestion doc");
+    static final X509Certificate comodoRsaCertificationAuthority = Certificates.decodeCertificatePem(certGestDoc);
+//
+    static final X509Certificate entrustRootCertificateAuthority = Certificates.decodeCertificatePem(certGestDoc);
 
-        X509TrustManager trustManager;
-        SSLSocketFactory sslSocketFactory;
-        try {
-            HandshakeCertificates certificates = new HandshakeCertificates.Builder()
-                    .addTrustedCertificate(letsEncryptCertificateAuthorityALPHA)
-                    .addTrustedCertificate(letsEncryptCertificateAuthorityALPHA)
-                    .addTrustedCertificate(letsEncryptCertificateAuthorityALPHA)
-                    // Uncomment if standard certificates are also required.
-                    //.addPlatformTrustedCertificates()
-                    .build();
+    static final X509Certificate letsEncryptCertificateAuthority = Certificates.decodeCertificatePem(certGestDoc);
+//    static final X509Certificate letsEncryptCertificateAuthorityALPHA = Certificates.decodeCertificatePem(certGestDoc);
 
-//            OkHttpClient client = new OkHttpClient.Builder()
-//                        .sslSocketFactory(certificates.sslSocketFactory(), certificates.trustManager())
-//                        .build();
-//            Request request = new Request.Builder()
-//                        .url("https://www.gestiondocumental.gob.ec/Administracion/usuarios/validar_datos_registro_civil.php?cedula=" + cedula)
-//                        .build();
-            System.out.println("EEEE");
+    static final X509Certificate comodoRsaCertificationAuthoritySRI = Certificates.decodeCertificatePem(certSRI);
+//
+    static final X509Certificate entrustRootCertificateAuthoritySRI = Certificates.decodeCertificatePem(certSRI);
 
-            try {
-                OkHttpClient client = new OkHttpClient().newBuilder()
-                        .build();
-                MediaType mediaType = MediaType.parse("application/json;charset=utf-8");
-                RequestBody body = RequestBody.create(mediaType, "{\r\n  \"api_key\": \"689652829f001d7d\",\r\n  \"api_secret\": \"d7f286ac80dd40ac4df7db7e6e7186d5467985b6\"\r\n}");
-                Request request = new Request.Builder()
-                        .url("https://emea.api.hvca.globalsign.com:8443/v2/login")
-                        .method("POST", body)
-                        .addHeader("Content-Type", "application/json;charset=utf-8")
-                        .build();
-                Response response = client.newCall(request).execute();
-
-            } catch (IOException e) {
-                System.out.println("ERROR IOException " + e.getMessage());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-//            
-
-        return "";
-    }
-
-    static final X509Certificate comodoRsaCertificationAuthority = Certificates.decodeCertificatePem(""
-            + "-----BEGIN CERTIFICATE-----\n"
-            + "MIIGQDCCBSigAwIBAgIQOn5WQUsmGTD8lZbZ6fBTcjANBgkqhkiG9w0BAQsFADBM\n"
-            + "MQswCQYDVQQGEwJMVjENMAsGA1UEBxMEUmlnYTERMA8GA1UEChMIR29HZXRTU0wx\n"
-            + "GzAZBgNVBAMTEkdvR2V0U1NMIFJTQSBEViBDQTAeFw0yMjA1MDMwMDAwMDBaFw0y\n"
-            + "MzA2MDMyMzU5NTlaMCcxJTAjBgNVBAMTHHd3dy5nZXN0aW9uZG9jdW1lbnRhbC5n\n"
-            + "b2IuZWMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDRJzKb2uHUrbg5\n"
-            + "aiI5Zr3yNw5Nnoi4P+1700QS7HQBgpXu8bFUmbvgTYnrrg9leub/3GW02EkaEorL\n"
-            + "o67TOr9iNInNqCeLyAdvJktShlYbKvF4+0Bi15N5fGR0Av7xwQ+K45qpJJL2pJR2\n"
-            + "RKV/tsyWa+lxRu6PzfgB7UGvWfkUu8DXzmST90v1wMVjO7JjvZzfxuMtU+9SwC3M\n"
-            + "b9stJcLwZuYIMlq82BERa1sXWNavRKZ8prigeBoKfLyOedMX0F0Mf0L5j7OfnXXD\n"
-            + "2ufU3J7xzTzlTPFpx3m/wJjqmvylbTjI4xBI2ogd8V01hDTABbKowdvT20ArCQrf\n"
-            + "AYL07G5lAgMBAAGjggNBMIIDPTAfBgNVHSMEGDAWgBT5+1DEi2e7Z2T+gyGmqc4/\n"
-            + "VYSTmTAdBgNVHQ4EFgQUbgX0xopX6SzpCPqj1tE5etfO2ZEwDgYDVR0PAQH/BAQD\n"
-            + "AgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMC\n"
-            + "MEsGA1UdIAREMEIwNgYLKwYBBAGyMQECAkAwJzAlBggrBgEFBQcCARYZaHR0cHM6\n"
-            + "Ly9jcHMudXNlcnRydXN0LmNvbTAIBgZngQwBAgEwPQYDVR0fBDYwNDAyoDCgLoYs\n"
-            + "aHR0cDovL2NybC51c2VydHJ1c3QuY29tL0dvR2V0U1NMUlNBRFZDQS5jcmwwbwYI\n"
-            + "KwYBBQUHAQEEYzBhMDgGCCsGAQUFBzAChixodHRwOi8vY3J0LnVzZXJ0cnVzdC5j\n"
-            + "b20vR29HZXRTU0xSU0FEVkNBLmNydDAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Au\n"
-            + "dXNlcnRydXN0LmNvbTBBBgNVHREEOjA4ghx3d3cuZ2VzdGlvbmRvY3VtZW50YWwu\n"
-            + "Z29iLmVjghhnZXN0aW9uZG9jdW1lbnRhbC5nb2IuZWMwggF8BgorBgEEAdZ5AgQC\n"
-            + "BIIBbASCAWgBZgB1AK33vvp8/xDIi509nB4+GGq0Zyldz7EMJMqFhjTr3IKKAAAB\n"
-            + "gIrjdDMAAAQDAEYwRAIgDbbKM7tEkciFzyMESNPxkYmuIkY/dYHMvd2XxRscoNkC\n"
-            + "IHfN0ZZIi06T9/LmiCKCFGKkvRt4Dg+x4mngTsc5CLlOAHUAejKMVNi3LbYg6jjg\n"
-            + "Uh7phBZwMhOFTTvSK8E6V6NS61IAAAGAiuN0SAAABAMARjBEAiBGmi3jC+pf0T0p\n"
-            + "z5HyVyxBiCoIk7lnpgewFtwQqiFrkQIgWPBZoO0e82HP/7IAKR/jbf5Efl2wNGk9\n"
-            + "Kxru7SanrQ0AdgDoPtDaPvUGNTLnVyi8iWvJA9PL0RFr7Otp4Xd9bQa9bgAAAYCK\n"
-            + "43QTAAAEAwBHMEUCIQD1xiCFqvaIrKDhHfVL6QU6JQ/Ecc8dsGN2kQm2tcvjIAIg\n"
-            + "fJhObS8yTy8LrcaHXJO9iv7lRK5EDhfgerE54fePZkgwDQYJKoZIhvcNAQELBQAD\n"
-            + "ggEBAFuR4/oc7iANBZ04BtYTMMOWvQxRLPLB1UjxQueAy5/YvdWYrIbHTSDVypFp\n"
-            + "HR5gVAhRKRwgbCTCdmW/dqUjbhaAGRKQ8/uTI2O+4ZGdUiDR+ZnjozATIhHJ/Byj\n"
-            + "/IInnEThRrbVElPk1xehLMry0NDx8o7TJJd+8jeK3GAYBXNUfoSWhtXWTZBnEtLf\n"
-            + "l05gi4xMyGhIrVoSDBLCztqKj3/Vh17sXQHB5LJzF6s3gfNKS0noUsokeGzH740u\n"
-            + "aE10VBlAt4rFQi8Kh0bJk43o1gVj0WY1MRspm7moNyVin+WUzlhyl3IT8OeKNiFl\n"
-            + "RFJUDupYzfrC36/sXqWOrBvCEkM=\n"
-            + "-----END CERTIFICATE-----");
-
-    static final X509Certificate entrustRootCertificateAuthority = Certificates.decodeCertificatePem(""
-            + "-----BEGIN CERTIFICATE-----\n"
-            + "MIIGQDCCBSigAwIBAgIQOn5WQUsmGTD8lZbZ6fBTcjANBgkqhkiG9w0BAQsFADBM\n"
-            + "MQswCQYDVQQGEwJMVjENMAsGA1UEBxMEUmlnYTERMA8GA1UEChMIR29HZXRTU0wx\n"
-            + "GzAZBgNVBAMTEkdvR2V0U1NMIFJTQSBEViBDQTAeFw0yMjA1MDMwMDAwMDBaFw0y\n"
-            + "MzA2MDMyMzU5NTlaMCcxJTAjBgNVBAMTHHd3dy5nZXN0aW9uZG9jdW1lbnRhbC5n\n"
-            + "b2IuZWMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDRJzKb2uHUrbg5\n"
-            + "aiI5Zr3yNw5Nnoi4P+1700QS7HQBgpXu8bFUmbvgTYnrrg9leub/3GW02EkaEorL\n"
-            + "o67TOr9iNInNqCeLyAdvJktShlYbKvF4+0Bi15N5fGR0Av7xwQ+K45qpJJL2pJR2\n"
-            + "RKV/tsyWa+lxRu6PzfgB7UGvWfkUu8DXzmST90v1wMVjO7JjvZzfxuMtU+9SwC3M\n"
-            + "b9stJcLwZuYIMlq82BERa1sXWNavRKZ8prigeBoKfLyOedMX0F0Mf0L5j7OfnXXD\n"
-            + "2ufU3J7xzTzlTPFpx3m/wJjqmvylbTjI4xBI2ogd8V01hDTABbKowdvT20ArCQrf\n"
-            + "AYL07G5lAgMBAAGjggNBMIIDPTAfBgNVHSMEGDAWgBT5+1DEi2e7Z2T+gyGmqc4/\n"
-            + "VYSTmTAdBgNVHQ4EFgQUbgX0xopX6SzpCPqj1tE5etfO2ZEwDgYDVR0PAQH/BAQD\n"
-            + "AgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMC\n"
-            + "MEsGA1UdIAREMEIwNgYLKwYBBAGyMQECAkAwJzAlBggrBgEFBQcCARYZaHR0cHM6\n"
-            + "Ly9jcHMudXNlcnRydXN0LmNvbTAIBgZngQwBAgEwPQYDVR0fBDYwNDAyoDCgLoYs\n"
-            + "aHR0cDovL2NybC51c2VydHJ1c3QuY29tL0dvR2V0U1NMUlNBRFZDQS5jcmwwbwYI\n"
-            + "KwYBBQUHAQEEYzBhMDgGCCsGAQUFBzAChixodHRwOi8vY3J0LnVzZXJ0cnVzdC5j\n"
-            + "b20vR29HZXRTU0xSU0FEVkNBLmNydDAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Au\n"
-            + "dXNlcnRydXN0LmNvbTBBBgNVHREEOjA4ghx3d3cuZ2VzdGlvbmRvY3VtZW50YWwu\n"
-            + "Z29iLmVjghhnZXN0aW9uZG9jdW1lbnRhbC5nb2IuZWMwggF8BgorBgEEAdZ5AgQC\n"
-            + "BIIBbASCAWgBZgB1AK33vvp8/xDIi509nB4+GGq0Zyldz7EMJMqFhjTr3IKKAAAB\n"
-            + "gIrjdDMAAAQDAEYwRAIgDbbKM7tEkciFzyMESNPxkYmuIkY/dYHMvd2XxRscoNkC\n"
-            + "IHfN0ZZIi06T9/LmiCKCFGKkvRt4Dg+x4mngTsc5CLlOAHUAejKMVNi3LbYg6jjg\n"
-            + "Uh7phBZwMhOFTTvSK8E6V6NS61IAAAGAiuN0SAAABAMARjBEAiBGmi3jC+pf0T0p\n"
-            + "z5HyVyxBiCoIk7lnpgewFtwQqiFrkQIgWPBZoO0e82HP/7IAKR/jbf5Efl2wNGk9\n"
-            + "Kxru7SanrQ0AdgDoPtDaPvUGNTLnVyi8iWvJA9PL0RFr7Otp4Xd9bQa9bgAAAYCK\n"
-            + "43QTAAAEAwBHMEUCIQD1xiCFqvaIrKDhHfVL6QU6JQ/Ecc8dsGN2kQm2tcvjIAIg\n"
-            + "fJhObS8yTy8LrcaHXJO9iv7lRK5EDhfgerE54fePZkgwDQYJKoZIhvcNAQELBQAD\n"
-            + "ggEBAFuR4/oc7iANBZ04BtYTMMOWvQxRLPLB1UjxQueAy5/YvdWYrIbHTSDVypFp\n"
-            + "HR5gVAhRKRwgbCTCdmW/dqUjbhaAGRKQ8/uTI2O+4ZGdUiDR+ZnjozATIhHJ/Byj\n"
-            + "/IInnEThRrbVElPk1xehLMry0NDx8o7TJJd+8jeK3GAYBXNUfoSWhtXWTZBnEtLf\n"
-            + "l05gi4xMyGhIrVoSDBLCztqKj3/Vh17sXQHB5LJzF6s3gfNKS0noUsokeGzH740u\n"
-            + "aE10VBlAt4rFQi8Kh0bJk43o1gVj0WY1MRspm7moNyVin+WUzlhyl3IT8OeKNiFl\n"
-            + "RFJUDupYzfrC36/sXqWOrBvCEkM=\n"
-            + "-----END CERTIFICATE-----"
-    );
-
-    static final X509Certificate letsEncryptCertificateAuthority = Certificates.decodeCertificatePem(""
-            + "-----BEGIN CERTIFICATE-----\n"
-            + "MIIGQDCCBSigAwIBAgIQOn5WQUsmGTD8lZbZ6fBTcjANBgkqhkiG9w0BAQsFADBM\n"
-            + "MQswCQYDVQQGEwJMVjENMAsGA1UEBxMEUmlnYTERMA8GA1UEChMIR29HZXRTU0wx\n"
-            + "GzAZBgNVBAMTEkdvR2V0U1NMIFJTQSBEViBDQTAeFw0yMjA1MDMwMDAwMDBaFw0y\n"
-            + "MzA2MDMyMzU5NTlaMCcxJTAjBgNVBAMTHHd3dy5nZXN0aW9uZG9jdW1lbnRhbC5n\n"
-            + "b2IuZWMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDRJzKb2uHUrbg5\n"
-            + "aiI5Zr3yNw5Nnoi4P+1700QS7HQBgpXu8bFUmbvgTYnrrg9leub/3GW02EkaEorL\n"
-            + "o67TOr9iNInNqCeLyAdvJktShlYbKvF4+0Bi15N5fGR0Av7xwQ+K45qpJJL2pJR2\n"
-            + "RKV/tsyWa+lxRu6PzfgB7UGvWfkUu8DXzmST90v1wMVjO7JjvZzfxuMtU+9SwC3M\n"
-            + "b9stJcLwZuYIMlq82BERa1sXWNavRKZ8prigeBoKfLyOedMX0F0Mf0L5j7OfnXXD\n"
-            + "2ufU3J7xzTzlTPFpx3m/wJjqmvylbTjI4xBI2ogd8V01hDTABbKowdvT20ArCQrf\n"
-            + "AYL07G5lAgMBAAGjggNBMIIDPTAfBgNVHSMEGDAWgBT5+1DEi2e7Z2T+gyGmqc4/\n"
-            + "VYSTmTAdBgNVHQ4EFgQUbgX0xopX6SzpCPqj1tE5etfO2ZEwDgYDVR0PAQH/BAQD\n"
-            + "AgWgMAwGA1UdEwEB/wQCMAAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMC\n"
-            + "MEsGA1UdIAREMEIwNgYLKwYBBAGyMQECAkAwJzAlBggrBgEFBQcCARYZaHR0cHM6\n"
-            + "Ly9jcHMudXNlcnRydXN0LmNvbTAIBgZngQwBAgEwPQYDVR0fBDYwNDAyoDCgLoYs\n"
-            + "aHR0cDovL2NybC51c2VydHJ1c3QuY29tL0dvR2V0U1NMUlNBRFZDQS5jcmwwbwYI\n"
-            + "KwYBBQUHAQEEYzBhMDgGCCsGAQUFBzAChixodHRwOi8vY3J0LnVzZXJ0cnVzdC5j\n"
-            + "b20vR29HZXRTU0xSU0FEVkNBLmNydDAlBggrBgEFBQcwAYYZaHR0cDovL29jc3Au\n"
-            + "dXNlcnRydXN0LmNvbTBBBgNVHREEOjA4ghx3d3cuZ2VzdGlvbmRvY3VtZW50YWwu\n"
-            + "Z29iLmVjghhnZXN0aW9uZG9jdW1lbnRhbC5nb2IuZWMwggF8BgorBgEEAdZ5AgQC\n"
-            + "BIIBbASCAWgBZgB1AK33vvp8/xDIi509nB4+GGq0Zyldz7EMJMqFhjTr3IKKAAAB\n"
-            + "gIrjdDMAAAQDAEYwRAIgDbbKM7tEkciFzyMESNPxkYmuIkY/dYHMvd2XxRscoNkC\n"
-            + "IHfN0ZZIi06T9/LmiCKCFGKkvRt4Dg+x4mngTsc5CLlOAHUAejKMVNi3LbYg6jjg\n"
-            + "Uh7phBZwMhOFTTvSK8E6V6NS61IAAAGAiuN0SAAABAMARjBEAiBGmi3jC+pf0T0p\n"
-            + "z5HyVyxBiCoIk7lnpgewFtwQqiFrkQIgWPBZoO0e82HP/7IAKR/jbf5Efl2wNGk9\n"
-            + "Kxru7SanrQ0AdgDoPtDaPvUGNTLnVyi8iWvJA9PL0RFr7Otp4Xd9bQa9bgAAAYCK\n"
-            + "43QTAAAEAwBHMEUCIQD1xiCFqvaIrKDhHfVL6QU6JQ/Ecc8dsGN2kQm2tcvjIAIg\n"
-            + "fJhObS8yTy8LrcaHXJO9iv7lRK5EDhfgerE54fePZkgwDQYJKoZIhvcNAQELBQAD\n"
-            + "ggEBAFuR4/oc7iANBZ04BtYTMMOWvQxRLPLB1UjxQueAy5/YvdWYrIbHTSDVypFp\n"
-            + "HR5gVAhRKRwgbCTCdmW/dqUjbhaAGRKQ8/uTI2O+4ZGdUiDR+ZnjozATIhHJ/Byj\n"
-            + "/IInnEThRrbVElPk1xehLMry0NDx8o7TJJd+8jeK3GAYBXNUfoSWhtXWTZBnEtLf\n"
-            + "l05gi4xMyGhIrVoSDBLCztqKj3/Vh17sXQHB5LJzF6s3gfNKS0noUsokeGzH740u\n"
-            + "aE10VBlAt4rFQi8Kh0bJk43o1gVj0WY1MRspm7moNyVin+WUzlhyl3IT8OeKNiFl\n"
-            + "RFJUDupYzfrC36/sXqWOrBvCEkM=\n"
-            + "-----END CERTIFICATE-----");
-    static final X509Certificate letsEncryptCertificateAuthorityALPHA = Certificates.decodeCertificatePem(""
-            + "-----BEGIN CERTIFICATE-----\n"
-            + "MIID4jCCAsqgAwIBAgIQAVdcE2quPilgUf/E92WZdzANBgkqhkiG9w0BAQsFADA4\n"
-            + "MRMwEQYDVQQKEwpHbG9iYWxTaWduMSEwHwYDVQQDExhHbG9iYWxTaWduIG1UTFMg\n"
-            + "SW5mcmEgQ0EwHhcNMjMwNDIyMTE1MjQxWhcNMjcwMTExMDAwMDAwWjBgMQswCQYD\n"
-            + "VQQGEwJFQzEkMCIGA1UECgwbQUxQSEEgVEVDSE5PTE9HSUVTIENJQSBMVERBMSsw\n"
-            + "KQYDVQQDDCJBTFBIQSBURUNITk9MT0dJRVMgQ0lBIExUREEgLSBIVkNBMIIBIjAN\n"
-            + "BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAysR5Tk2JUVQF7X0TQNJHgwX5Kudf\n"
-            + "El/vPOher3s8PaAM0Myq2AulBPZVfxuBT3baycsRnZWvFD6GGYGiSBYNET/eVlip\n"
-            + "PKmRLrMBZM5y+venRYTXWx6jYf9n7ktfsvkFdv+3SRsp2T4HRMoJJHIPYaAzbyge\n"
-            + "RGlBBRsKmrnZgWnWIu1Ce9KoRAApKuLsDVdxaalisdHAaL3e0e1jupqUqi3KCIy4\n"
-            + "DGCt/RSZhlUClp5jjQ8o3Lvta7xJDuD7FVY0uTyOSK8ctS0Tz2uJc9Ng+aPy/IZB\n"
-            + "miDZy39W/430i8nnAaqXIZNxxskH4WDfDs4MxjWtqQ0kHHWttSnxX+U7iQIDAQAB\n"
-            + "o4G/MIG8MA4GA1UdDwEB/wQEAwIFoDATBgNVHSUEDDAKBggrBgEFBQcDAjAdBgNV\n"
-            + "HQ4EFgQUD58XrUeDmjq+0F4QLkrovsz6BWswDAYDVR0TAQH/BAIwADAfBgNVHSME\n"
-            + "GDAWgBQ92NALcQtgH4+Sbes2n9pR6/LlVjBHBgNVHR8EQDA+MDygOqA4hjZodHRw\n"
-            + "Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2NhL0dsb2JhbFNpZ25tVExTSW5mcmFDQS5j\n"
-            + "cmwwDQYJKoZIhvcNAQELBQADggEBADZuT8VqadtNJ4fT91Mn01JYhwrmh0FFNpF1\n"
-            + "JtaZk4H6RN8xOHvwOg59VXdt5IYgPDZQBt6V2ndg0j7zYZxColCT+i+KlKWO0fg3\n"
-            + "IAfOSQiWEN9de9LWqmou4n8Jr5qZEPZqdYXJWsIiibd2l6JlK3TjY9lN04OxbnKA\n"
-            + "3NnwWrr7800rL1ecQgBw5BRfTUS6Mcswf7BeAhcanqm8BTWaO3Ppjtk2DPsuW7bc\n"
-            + "Djm1pNcJxqysjdDeByj/5BwaVxXvTKWR395UT9Q4pu3F/DQ2fHZ60/vr28vzb1/D\n"
-            + "a1a6+g5EtJxxKFdSPObFNZaamDTEGjyxgFT3KSXYcfaGt6Gsfes=\n"
-            + "-----END CERTIFICATE-----");
-
+    static final X509Certificate letsEncryptCertificateAuthoritySRI = Certificates.decodeCertificatePem(certSRI);
 }
